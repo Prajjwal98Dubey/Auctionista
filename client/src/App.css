@@ -1,0 +1,16 @@
+html, body {
+  height: 100%; 
+  margin: 0;    
+}
+body{
+  /* background-image: linear-gradient(to right, #f8c7b3, #f5a6c3); */
+  /* background-image: linear-gradient(to right, #b4f8d1, #f9f8b5); */
+  /* background-image: linear-gradient(to right, #f8c6d1, #a8d8f6); */
+  background-image: linear-gradient(to right, #f9f4b7, #f7d08c);
+}
+
+div{
+  color: #333333;
+  /* color: #2a2a2a; */
+  /* color: #4e3b31; */
+}

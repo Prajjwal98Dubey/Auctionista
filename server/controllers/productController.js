@@ -86,7 +86,7 @@ export const editProduct = async (req, res) => {
   try {
     let updatedProd = await auctionPool.query(
       `UPDATE PRODUCT SET ${attr} = $1 WHERE PRODUCT_ID = $2`,
-      [new_value, product_id]
+      [new_value.trim(), product_id]
     );
     if (!updatedProd.rowCount)
       return res.json({ message: "no product with this id." }).status(404);

@@ -50,7 +50,6 @@ export const registerUser = async (req, res) => {
       refresh_token,
       user_first_name.toLowerCase().trim(),
       user_last_name.toLowerCase().trim(),
-      "",
       user_contact_no,
       user_address_line.toLowerCase().trim(),
       user_city.toLowerCase().trim(),
@@ -58,6 +57,7 @@ export const registerUser = async (req, res) => {
       "",
       false,
       user_photo,
+      "",
     ]
   );
   res.cookie("accessToken", refresh_token, {
@@ -79,7 +79,7 @@ export const loginUser = async (req, res) => {
     if (!user_cred || !user_password)
       return res.json({ message: "insufficient data" }).status(400);
     let user = await auctionPool.query(
-      "SELECT USER_NAME,USER_PASSWORD,USER_EMAIL,USER_REFRESH_TOKEN FROM USERS WHERE USER_NAME = $1 OR USER_EMAIL = $1",
+      "SELECT USER_NAME,USER_PASSWORD,USER_EMAIL,USER_REFRESH_TOKEN,USER_PHOTO FROM USERS WHERE USER_NAME = $1 OR USER_EMAIL = $1",
       [user_cred]
     );
     if (user.rows.length === 0)
@@ -100,6 +100,7 @@ export const loginUser = async (req, res) => {
           message: "login success",
           user_name: user.rows[0].user_name,
           user_email: user.rows[0].user_email,
+          user_photo: user.rows[0].user_photo,
         })
         .status(200);
     }
@@ -158,7 +159,12 @@ export const thirdParyLogin = async (req, res) => {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 30 * 1000,
       })
-      .json({ message: "third party user register / login" })
+      .json({
+        message: "third party user register / login",
+        user_name,
+        user_email,
+        user_photo,
+      })
       .status(201);
   } catch (error) {
     return res.json({ message: "error" });
@@ -173,5 +179,68 @@ export const logOutUser = async (_, res) => {
     return res.json({ message: "logout success !!!" });
   } catch (error) {
     return res.json({ message: "error" });
+  }
+};
+
+export const getLoggedInUserDetails = async (req, res) => {
+  const user = req.user;
+  try {
+    let userDetails = await auctionPool.query(
+      "SELECT user_id,user_name,user_email,user_first_name,user_last_name,users_unique_identifier,user_contact_no,user_address_line_1,user_city,user_country,user_photo,user_role,is_third_party_auth from USERS WHERE USER_ID = $1",
+      [user]
+    );
+    if (!userDetails.rowCount)
+      return res.json({ message: "user does not exists" }).status(200);
+    return res.json({ message: "success", ...userDetails.rows[0] }).status(200);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const getUserDetails = async (req, res) => {
+  const user_name = req.query.user_name;
+  try {
+    let userDetails = await auctionPool.query(
+      "SELECT user_id,user_name,user_email,user_first_name,user_last_name,users_unique_identifier,user_contact_no,user_address_line_1,user_city,user_country,user_photo,user_role,is_third_party_auth from USERS WHERE USER_NAME = $1",
+      [user_name]
+    );
+    if (!userDetails.rowCount)
+      return res.json({ message: "user does not exists" }).status(200);
+    return res.json({ message: "success", ...userDetails.rows[0] }).status(200);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const editUser = async (req, res) => {
+  const user = req.user;
+  const { attr, new_value } = req.body;
+  if (!attr || !new_value)
+    return res.json({ message: "insufficient data to update" }).status(400);
+  try {
+    let updatedUser = await auctionPool.query(
+      `UPDATE USERS SET ${attr} = $1 WHERE USER_ID = $2 `,
+      [new_value.trim(), user]
+    );
+    if (!updatedUser.rowCount)
+      return res.json({ message: "no user with this id" }).status(404);
+    return res.json({ message: "updated success" }).status(200);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  const user = req.user;
+  try {
+    let deletedUser = await auctionPool.query(
+      "DELETE FROM USERS WHERE USER_ID = $1 ",
+      [user]
+    );
+    if (!deletedUser.rowCount)
+      return res.json({ message: "no user with this id exists." }).status(404);
+    return res.json({ message: "user deleted!!!" }).status(200);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
   }
 };

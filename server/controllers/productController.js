@@ -110,3 +110,296 @@ export const deleteProduct = async (req, res) => {
     return res.json({ message: "error" }).status;
   }
 };
+
+export const addMobile = async (req, res) => {
+  const {
+    brand_name,
+    model_name,
+    ram_storage,
+    rom_storage,
+    operating_system,
+    rear_camera,
+    front_camera,
+    product_color,
+    screen_size,
+    set_price,
+    original_price,
+    title,
+    desc,
+    usage_time,
+    bid_start_time,
+    product_appeal,
+    product_images,
+    bid_time,
+    cpu,
+  } = req.body;
+
+  const user = req.user;
+
+  try {
+    const productId = nanoid();
+    if (
+      !brand_name ||
+      !model_name ||
+      !ram_storage ||
+      !rom_storage ||
+      !operating_system ||
+      !rear_camera ||
+      !front_camera ||
+      !product_color ||
+      !screen_size ||
+      !set_price ||
+      !original_price ||
+      !title ||
+      !usage_time ||
+      !bid_start_time ||
+      !bid_time ||
+      !cpu
+    ) {
+      console.log(
+        brand_name,
+        model_name,
+        ram_storage,
+        rom_storage,
+        operating_system,
+        rear_camera,
+        front_camera,
+        product_color,
+        screen_size,
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        product_images,
+        bid_time,
+        cpu
+      );
+      return res.json({ message: "insufficient data" }).status(400);
+    }
+    await auctionPool.query(
+      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [
+        productId,
+        user,
+        set_price,
+        original_price,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        [],
+      ]
+    );
+    await auctionPool.query(
+      "INSERT INTO MOBILE_SPEC VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)",
+      [
+        productId,
+        brand_name,
+        model_name,
+        ram_storage,
+        rom_storage,
+        operating_system,
+        rear_camera,
+        front_camera,
+        product_color,
+        screen_size,
+        product_images,
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        0,
+        bid_time,
+        user,
+        cpu,
+      ]
+    );
+    return res.json({ message: "product added!!!" }).status(201);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addLaptop = async (req, res) => {
+  const {
+    brand_name,
+    model_name,
+    ram_storage,
+    rom_storage,
+    operating_system,
+    product_color,
+    screen_size,
+    set_price,
+    original_price,
+    title,
+    desc,
+    usage_time,
+    bid_start_time,
+    product_appeal,
+    product_images,
+    bid_time,
+    cpu,
+  } = req.body;
+
+  const user = req.user;
+
+  try {
+    const productId = nanoid();
+    if (
+      !brand_name ||
+      !model_name ||
+      !ram_storage ||
+      !rom_storage ||
+      !operating_system ||
+      !product_color ||
+      !screen_size ||
+      !set_price ||
+      !original_price ||
+      !title ||
+      !usage_time ||
+      !bid_start_time ||
+      !bid_time ||
+      !cpu
+    ) {
+      return res.json({ message: "insufficient data" }).status(400);
+    }
+    await auctionPool.query(
+      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [
+        productId,
+        user,
+        set_price,
+        original_price,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        [],
+      ]
+    );
+    await auctionPool.query(
+      "INSERT INTO LAPTOP_SPEC VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)",
+      [
+        productId,
+        brand_name,
+        model_name,
+        ram_storage,
+        rom_storage,
+        operating_system,
+        product_color,
+        screen_size,
+        product_images,
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        0,
+        bid_time,
+        user,
+        cpu,
+      ]
+    );
+    return res.json({ message: "product added!!!" }).status(201);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addWatch = async (req, res) => {
+  const {
+    brand_name,
+    model_name,
+    product_color,
+    set_price,
+    original_price,
+    title,
+    desc,
+    usage_time,
+    bid_start_time,
+    product_appeal,
+    bid_time,
+    diameter,
+    is_digital,
+    is_calling_available,
+    have_fitness_tracker,
+    product_images,
+  } = req.body;
+  const user = req.user;
+  try {
+    const productId = nanoid();
+    if (
+      !brand_name ||
+      !model_name ||
+      !product_color ||
+      !set_price ||
+      !original_price ||
+      !title ||
+      !usage_time ||
+      !bid_start_time ||
+      !bid_time ||
+      !is_digital ||
+      !diameter
+    ) {
+      return res.json({ message: "insufficient data" }).status(400);
+    }
+    await auctionPool.query(
+      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [
+        productId,
+        user,
+        set_price,
+        original_price,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        [],
+      ]
+    );
+    await auctionPool.query(
+      "INSERT INTO WATCH_SPEC VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)",
+      [
+        productId,
+        brand_name,
+        model_name,
+        product_color,
+        parseInt(diameter),
+        parseInt(is_digital),
+        is_calling_available,
+        have_fitness_tracker,
+        user,
+        product_images,
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        0,
+        bid_time,
+      ]
+    );
+    return res.json({ message: "product added!!!" }).status(201);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
+  }
+};

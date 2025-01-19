@@ -156,27 +156,6 @@ export const addMobile = async (req, res) => {
       !bid_time ||
       !cpu
     ) {
-      console.log(
-        brand_name,
-        model_name,
-        ram_storage,
-        rom_storage,
-        operating_system,
-        rear_camera,
-        front_camera,
-        product_color,
-        screen_size,
-        set_price,
-        original_price,
-        title,
-        desc,
-        usage_time,
-        bid_start_time,
-        product_appeal,
-        product_images,
-        bid_time,
-        cpu
-      );
       return res.json({ message: "insufficient data" }).status(400);
     }
     await auctionPool.query(
@@ -399,6 +378,393 @@ export const addWatch = async (req, res) => {
       ]
     );
     return res.json({ message: "product added!!!" }).status(201);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const addMonitor = async (req, res) => {
+  const {
+    brand_name,
+    model_name,
+    product_color,
+    screen_size,
+    set_price,
+    original_price,
+    title,
+    desc,
+    usage_time,
+    bid_start_time,
+    product_appeal,
+    bid_time,
+    product_images,
+  } = req.body;
+  const user = req.user;
+  try {
+    if (
+      !brand_name ||
+      !model_name ||
+      !product_color ||
+      !screen_size ||
+      !set_price ||
+      !original_price ||
+      !title ||
+      !desc ||
+      !usage_time ||
+      !bid_start_time ||
+      !bid_time
+    ) {
+      return res.json({ message: "insufficient data" }).status(400);
+    }
+    const productId = nanoid();
+    await auctionPool.query(
+      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [
+        productId,
+        user,
+        set_price,
+        original_price,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        [],
+      ]
+    );
+    await auctionPool.query(
+      "INSERT INTO MONITOR_SPEC VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)",
+      [
+        productId,
+        brand_name,
+        model_name,
+        product_color,
+        screen_size,
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        0,
+        bid_time,
+        user,
+        product_images,
+      ]
+    );
+    return res.json({ message: "product added!!" }).status(201);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const addKeyBoard = async (req, res) => {
+  const {
+    brand_name,
+    model_name,
+    product_color,
+    set_price,
+    original_price,
+    title,
+    desc,
+    usage_time,
+    bid_start_time,
+    product_appeal,
+    bid_time,
+    product_images,
+  } = req.body;
+  const user = req.user;
+  try {
+    console.log(desc, usage_time, bid_start_time, product_appeal, bid_time);
+    if (
+      !brand_name ||
+      !model_name ||
+      !product_color ||
+      !set_price ||
+      !original_price ||
+      !title ||
+      !desc ||
+      !usage_time ||
+      !bid_start_time ||
+      !bid_time
+    ) {
+      return res.json({ message: "insufficient data" }).status(400);
+    }
+    const productId = nanoid();
+    await auctionPool.query(
+      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [
+        productId,
+        user,
+        set_price,
+        original_price,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        [],
+      ]
+    );
+    await auctionPool.query(
+      "INSERT INTO KEYBOARD_SPEC VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
+      [
+        productId,
+        brand_name,
+        model_name,
+        product_color,
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        0,
+        bid_time,
+        user,
+        product_images,
+      ]
+    );
+    return res.json({ mesage: "product added!!!" }).status(201);
+  } catch (error) {
+    console.log(error);
+    return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const addHeadPhone = async (req, res) => {
+  const {
+    brand_name,
+    model_name,
+    product_color,
+    is_wireless,
+    set_price,
+    original_price,
+    title,
+    desc,
+    usage_time,
+    bid_start_time,
+    product_appeal,
+    bid_time,
+    product_images,
+  } = req.body;
+  const user = req.user;
+  try {
+    if (
+      !brand_name ||
+      !model_name ||
+      !product_color ||
+      !is_wireless ||
+      !set_price ||
+      !original_price ||
+      !title ||
+      !desc ||
+      !usage_time ||
+      !bid_start_time ||
+      !bid_time
+    ) {
+      return res.json({ message: "insufficient data" }).status(400);
+    }
+    const productId = nanoid();
+    await auctionPool.query(
+      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [
+        productId,
+        user,
+        set_price,
+        original_price,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        [],
+      ]
+    );
+    await auctionPool.query(
+      "INSERT INTO HEADPHONE_SPEC VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)",
+      [
+        productId,
+        brand_name,
+        model_name,
+        product_color,
+        parseInt(is_wireless),
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        0,
+        bid_time,
+        user,
+        product_images,
+      ]
+    );
+    return res.json({ mesage: "product added!!!" }).status(201);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const addMouse = async (req, res) => {
+  const {
+    brand_name,
+    model_name,
+    product_color,
+    is_wireless,
+    set_price,
+    original_price,
+    title,
+    desc,
+    usage_time,
+    bid_start_time,
+    product_appeal,
+    bid_time,
+    product_images,
+  } = req.body;
+  const user = req.user;
+  try {
+    if (
+      !brand_name ||
+      !model_name ||
+      !product_color ||
+      !is_wireless ||
+      !set_price ||
+      !original_price ||
+      !title ||
+      !desc ||
+      !usage_time ||
+      !bid_start_time ||
+      !bid_time
+    ) {
+      return res.json({ message: "insufficient data" }).status(400);
+    }
+    const productId = nanoid();
+    await auctionPool.query(
+      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [
+        productId,
+        user,
+        set_price,
+        original_price,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        [],
+      ]
+    );
+    await auctionPool.query(
+      "INSERT INTO MOUSE_SPEC VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)",
+      [
+        productId,
+        brand_name,
+        model_name,
+        product_color,
+        parseInt(is_wireless),
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        0,
+        bid_time,
+        user,
+        product_images,
+      ]
+    );
+    return res.json({ mesage: "product added!!!" }).status(201);
+  } catch (error) {
+    return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const addGeneralElectronics = async (req, res) => {
+  const {
+    brand_name,
+    model_name,
+    product_color,
+    set_price,
+    original_price,
+    title,
+    desc,
+    usage_time,
+    bid_start_time,
+    product_appeal,
+    bid_time,
+    product_images,
+  } = req.body;
+  const user = req.user;
+  try {
+    if (
+      !brand_name ||
+      !model_name ||
+      !product_color ||
+      !set_price ||
+      !original_price ||
+      !title ||
+      !desc ||
+      !product_appeal ||
+      !usage_time ||
+      !bid_start_time ||
+      !bid_time
+    ) {
+      return res.json({ message: "insufficient data" }).status(400);
+    }
+    const productId = nanoid();
+    await auctionPool.query(
+      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [
+        productId,
+        user,
+        set_price,
+        original_price,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        [],
+      ]
+    );
+    await auctionPool.query(
+      "INSERT INTO GENERAL_ELECTRONICS_SPEC VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
+      [
+        productId,
+        brand_name,
+        model_name,
+        product_color,
+        set_price,
+        original_price,
+        title,
+        desc,
+        usage_time,
+        bid_start_time,
+        product_appeal,
+        0,
+        bid_time,
+        user,
+        product_images,
+      ]
+    );
+    return res.json({ mesage: "product added!!!" }).status(201);
   } catch (error) {
     return res.json({ message: "error" }).status(400);
   }

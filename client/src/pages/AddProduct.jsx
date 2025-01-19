@@ -43,6 +43,11 @@ const AddProduct = () => {
               <option value="mobile">Mobile</option>
               <option value="laptop">Laptop</option>
               <option value="watch">Watch</option>
+              <option value="monitor">Monitor</option>
+              <option value="keyboard">KeyBoard</option>
+              <option value="mouse">Mouse</option>
+              <option value="headphone">Headphone</option>
+              <option value="electronics">General Electronics</option>
             </select>
           </div>
 
@@ -50,8 +55,8 @@ const AddProduct = () => {
           {selected && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
-                ...mapCategoriesToOptions[selected],
                 ...mapCategoriesToOptions["common"],
+                ...mapCategoriesToOptions[selected],
               ].map((feature, index) => (
                 <div key={index} className="relative">
                   <InputCustom feature={feature} />

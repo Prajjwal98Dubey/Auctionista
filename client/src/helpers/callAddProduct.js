@@ -9,7 +9,7 @@ import {
   PRODUCT_MOUSE_ADD,
 } from "../backendapi";
 
-export const callAddProducts = async (category, details) => {
+export const callAddProducts = async (category, details, images) => {
   if (category === "mobile") {
     if (
       !details.brand_name ||
@@ -27,7 +27,8 @@ export const callAddProducts = async (category, details) => {
       !details.usage_time ||
       !details.bid_start_time ||
       !details.bid_time ||
-      !details.cpu
+      !details.cpu ||
+      images.length === 0
     ) {
       return alert("enter all mandatory fields");
     }
@@ -48,6 +49,7 @@ export const callAddProducts = async (category, details) => {
           front_camera: details.front_camera,
           product_color: details.product_color,
           screen_size: details.screen_size,
+          product_images: images,
           set_price: parseInt(details.set_price),
           original_price: parseInt(details.original_price),
           title: details.title,
@@ -79,7 +81,8 @@ export const callAddProducts = async (category, details) => {
       !details.usage_time ||
       !details.bid_start_time ||
       !details.bid_time ||
-      !details.cpu
+      !details.cpu ||
+      images.length === 0
     ) {
       return alert("enter all mandatory fields");
     }
@@ -99,6 +102,7 @@ export const callAddProducts = async (category, details) => {
           product_color: details.product_color,
           screen_size: details.screen_size,
           set_price: parseInt(details.set_price),
+          product_images: images,
           original_price: parseInt(details.original_price),
           title: details.title,
           desc: details.desc,
@@ -126,7 +130,8 @@ export const callAddProducts = async (category, details) => {
       !details.bid_start_time ||
       !details.bid_time ||
       !details.is_digital ||
-      !details.diameter
+      !details.diameter ||
+      images.length === 0
     ) {
       return alert("enter all mandatory fields");
     }
@@ -148,6 +153,7 @@ export const callAddProducts = async (category, details) => {
           set_price: parseInt(details.set_price),
           original_price: parseInt(details.original_price),
           title: details.title,
+          product_images: images,
           desc: details.desc,
           usage_time: details.usage_time,
           bid_start_time: details.bid_start_time,
@@ -172,7 +178,8 @@ export const callAddProducts = async (category, details) => {
       !details.desc ||
       !details.usage_time ||
       !details.bid_start_time ||
-      !details.bid_time
+      !details.bid_time ||
+      images.length === 0
     ) {
       return alert("enter all mandatory fields");
     }
@@ -190,6 +197,7 @@ export const callAddProducts = async (category, details) => {
           screen_size: details.screen_size,
           set_price: parseInt(details.set_price),
           original_price: parseInt(details.original_price),
+          product_images: images,
           title: details.title,
           desc: details.desc,
           usage_time: details.usage_time,
@@ -214,7 +222,8 @@ export const callAddProducts = async (category, details) => {
       !details.desc ||
       !details.usage_time ||
       !details.bid_start_time ||
-      !details.bid_time
+      !details.bid_time ||
+      images.length === 0
     ) {
       return alert("enter all mandatory fields");
     }
@@ -233,6 +242,7 @@ export const callAddProducts = async (category, details) => {
           original_price: parseInt(details.original_price),
           title: details.title,
           desc: details.desc,
+          product_images: images,
           usage_time: details.usage_time,
           bid_start_time: details.bid_start_time,
           product_appeal: details.product_appeal,
@@ -255,7 +265,8 @@ export const callAddProducts = async (category, details) => {
       !details.desc ||
       !details.usage_time ||
       !details.bid_start_time ||
-      !details.bid_time
+      !details.bid_time ||
+      images.length === 0
     ) {
       return alert("enter all mandatory fields");
     }
@@ -275,6 +286,7 @@ export const callAddProducts = async (category, details) => {
           original_price: parseInt(details.original_price),
           title: details.title,
           desc: details.desc,
+          product_images: images,
           usage_time: details.usage_time,
           bid_start_time: details.bid_start_time,
           product_appeal: details.product_appeal,
@@ -297,7 +309,8 @@ export const callAddProducts = async (category, details) => {
       !details.desc ||
       !details.usage_time ||
       !details.bid_start_time ||
-      !details.bid_time
+      !details.bid_time ||
+      images.length === 0
     ) {
       return alert("enter all mandatory fields");
     }
@@ -316,6 +329,7 @@ export const callAddProducts = async (category, details) => {
           set_price: parseInt(details.set_price),
           original_price: parseInt(details.original_price),
           title: details.title,
+          product_images: images,
           desc: details.desc,
           usage_time: details.usage_time,
           bid_start_time: details.bid_start_time,
@@ -339,7 +353,8 @@ export const callAddProducts = async (category, details) => {
       !details.desc ||
       !details.usage_time ||
       !details.bid_start_time ||
-      !details.bid_time
+      !details.bid_time ||
+      images.length === 0
     ) {
       return alert("enter all mandatory fields");
     }
@@ -360,6 +375,7 @@ export const callAddProducts = async (category, details) => {
           desc: details.desc,
           usage_time: details.usage_time,
           bid_start_time: details.bid_start_time,
+          product_images: images,
           product_appeal: details.product_appeal,
           bid_time: details.bid_time,
         }),

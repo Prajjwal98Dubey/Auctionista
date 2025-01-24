@@ -154,7 +154,8 @@ export const addMobile = async (req, res) => {
       !usage_time ||
       !bid_start_time ||
       !bid_time ||
-      !cpu
+      !cpu ||
+      product_images.length === 0
     ) {
       return res.json({ message: "insufficient data" }).status(400);
     }
@@ -172,7 +173,7 @@ export const addMobile = async (req, res) => {
         "",
         0,
         "",
-        [],
+        product_images,
       ]
     );
     await auctionPool.query(
@@ -247,7 +248,8 @@ export const addLaptop = async (req, res) => {
       !usage_time ||
       !bid_start_time ||
       !bid_time ||
-      !cpu
+      !cpu ||
+      product_images.length === 0
     ) {
       return res.json({ message: "insufficient data" }).status(400);
     }
@@ -265,7 +267,7 @@ export const addLaptop = async (req, res) => {
         "",
         0,
         "",
-        [],
+        product_images,
       ]
     );
     await auctionPool.query(
@@ -412,7 +414,8 @@ export const addMonitor = async (req, res) => {
       !desc ||
       !usage_time ||
       !bid_start_time ||
-      !bid_time
+      !bid_time ||
+      product_images.length === 0
     ) {
       return res.json({ message: "insufficient data" }).status(400);
     }
@@ -431,7 +434,7 @@ export const addMonitor = async (req, res) => {
         "",
         0,
         "",
-        [],
+        product_images,
       ]
     );
     await auctionPool.query(
@@ -489,7 +492,8 @@ export const addKeyBoard = async (req, res) => {
       !desc ||
       !usage_time ||
       !bid_start_time ||
-      !bid_time
+      !bid_time ||
+      product_images.length === 0
     ) {
       return res.json({ message: "insufficient data" }).status(400);
     }
@@ -508,7 +512,7 @@ export const addKeyBoard = async (req, res) => {
         "",
         0,
         "",
-        [],
+        product_images,
       ]
     );
     await auctionPool.query(
@@ -567,7 +571,8 @@ export const addHeadPhone = async (req, res) => {
       !desc ||
       !usage_time ||
       !bid_start_time ||
-      !bid_time
+      !bid_time ||
+      product_images.length === 0
     ) {
       return res.json({ message: "insufficient data" }).status(400);
     }
@@ -586,7 +591,7 @@ export const addHeadPhone = async (req, res) => {
         "",
         0,
         "",
-        [],
+        product_images,
       ]
     );
     await auctionPool.query(
@@ -645,7 +650,8 @@ export const addMouse = async (req, res) => {
       !desc ||
       !usage_time ||
       !bid_start_time ||
-      !bid_time
+      !bid_time ||
+      product_images.length === 0
     ) {
       return res.json({ message: "insufficient data" }).status(400);
     }
@@ -664,7 +670,7 @@ export const addMouse = async (req, res) => {
         "",
         0,
         "",
-        [],
+        product_images,
       ]
     );
     await auctionPool.query(
@@ -722,7 +728,8 @@ export const addGeneralElectronics = async (req, res) => {
       !product_appeal ||
       !usage_time ||
       !bid_start_time ||
-      !bid_time
+      !bid_time ||
+      product_images.length === 0
     ) {
       return res.json({ message: "insufficient data" }).status(400);
     }
@@ -741,7 +748,7 @@ export const addGeneralElectronics = async (req, res) => {
         "",
         0,
         "",
-        [],
+        product_images,
       ]
     );
     await auctionPool.query(

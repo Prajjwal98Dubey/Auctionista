@@ -19,7 +19,7 @@ import {
 const productRouter = express.Router();
 
 productRouter.route("/add").post(authMiddleWare, addProduct);
-productRouter.route("/prod_details").get(getProductDetails);
+// productRouter.route("/prod_details").get(getProductDetails);
 productRouter.route("/edit_prod").put(authMiddleWare, editProduct);
 productRouter.route("/delete_prod").delete(authMiddleWare, deleteProduct);
 productRouter.route("/add_mobile").post(authMiddleWare, addMobile);
@@ -33,5 +33,5 @@ productRouter
   .post(authMiddleWare, addGeneralElectronics);
 productRouter.route("/add_headphone").post(authMiddleWare, addHeadPhone);
 productRouter.route("/all_products").get(displayProducts);
-
+productRouter.route("/prod_details").get(getProductDetails);
 export default productRouter;

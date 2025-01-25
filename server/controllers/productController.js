@@ -166,13 +166,13 @@ export const addMobile = async (req, res) => {
         user,
         set_price,
         original_price,
-        "",
-        "",
-        "",
-        "",
-        "",
+        title,
+        desc,
+        "mobile",
+        usage_time,
+        bid_start_time,
         0,
-        "",
+        product_appeal,
         product_images,
       ]
     );
@@ -260,13 +260,13 @@ export const addLaptop = async (req, res) => {
         user,
         set_price,
         original_price,
-        "",
-        "",
-        "",
-        "",
-        "",
+        title,
+        desc,
+        "laptop",
+        usage_time,
+        bid_start_time,
         0,
-        "",
+        product_appeal,
         product_images,
       ]
     );
@@ -345,14 +345,14 @@ export const addWatch = async (req, res) => {
         user,
         set_price,
         original_price,
-        "",
-        "",
-        "",
-        "",
-        "",
+        title,
+        desc,
+        "watch",
+        usage_time,
+        bid_start_time,
         0,
-        "",
-        [],
+        product_appeal,
+        product_images,
       ]
     );
     await auctionPool.query(
@@ -427,13 +427,13 @@ export const addMonitor = async (req, res) => {
         user,
         set_price,
         original_price,
-        "",
-        "",
-        "",
-        "",
-        "",
+        title,
+        desc,
+        "monitor",
+        usage_time,
+        bid_start_time,
         0,
-        "",
+        product_appeal,
         product_images,
       ]
     );
@@ -505,13 +505,13 @@ export const addKeyBoard = async (req, res) => {
         user,
         set_price,
         original_price,
-        "",
-        "",
-        "",
-        "",
-        "",
+        title,
+        desc,
+        "keyboard",
+        usage_time,
+        bid_start_time,
         0,
-        "",
+        product_appeal,
         product_images,
       ]
     );
@@ -584,13 +584,13 @@ export const addHeadPhone = async (req, res) => {
         user,
         set_price,
         original_price,
-        "",
-        "",
-        "",
-        "",
-        "",
+        title,
+        desc,
+        "headphone",
+        usage_time,
+        bid_start_time,
         0,
-        "",
+        product_appeal,
         product_images,
       ]
     );
@@ -663,13 +663,13 @@ export const addMouse = async (req, res) => {
         user,
         set_price,
         original_price,
-        "",
-        "",
-        "",
-        "",
-        "",
+        title,
+        desc,
+        "mouse",
+        usage_time,
+        bid_start_time,
         0,
-        "",
+        product_appeal,
         product_images,
       ]
     );
@@ -741,13 +741,13 @@ export const addGeneralElectronics = async (req, res) => {
         user,
         set_price,
         original_price,
-        "",
-        "",
-        "",
-        "",
-        "",
+        title,
+        desc,
+        "general-electronics",
+        usage_time,
+        bid_start_time,
         0,
-        "",
+        product_appeal,
         product_images,
       ]
     );
@@ -774,5 +774,16 @@ export const addGeneralElectronics = async (req, res) => {
     return res.json({ mesage: "product added!!!" }).status(201);
   } catch (error) {
     return res.json({ message: "error" }).status(400);
+  }
+};
+
+export const displayProducts = async (req, res) => {
+  try {
+    let latestProducts = await auctionPool.query(
+      "SELECT PRODUCT_ID, PRODUCT_SET_PRICE, PRODUCT_ORIGINAL_PRICE,PRODUCT_TITLE,PRODUCT_DESC,PRODUCT_CATEGORY,PRODUCT_USAGE_TIME,BID_START_TIME,HIGHEST_BID,PRODUCT_APPEAL,PRODUCT_IMAGES FROM PRODUCT"
+    );
+    return res.json({ products: latestProducts.rows }).status(200);
+  } catch (error) {
+    console.log(error);
   }
 };

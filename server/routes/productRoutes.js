@@ -11,6 +11,7 @@ import {
   addProduct,
   addWatch,
   deleteProduct,
+  displayProducts,
   editProduct,
   getProductDetails,
 } from "../controllers/productController.js";
@@ -31,5 +32,6 @@ productRouter
   .route("/add_general_electronics")
   .post(authMiddleWare, addGeneralElectronics);
 productRouter.route("/add_headphone").post(authMiddleWare, addHeadPhone);
+productRouter.route("/all_products").get(displayProducts);
 
 export default productRouter;

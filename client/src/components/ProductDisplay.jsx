@@ -1,0 +1,143 @@
+import { useEffect } from "react";
+import { DISPLAY_PRODUCTS_API } from "../backendapi";
+import { useState } from "react";
+import { formatBidTime, formatUsageTime } from "../helpers/formatTime";
+
+const ProductDisplay = () => {
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        let fetchedProducts = await fetch(DISPLAY_PRODUCTS_API, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        fetchedProducts = await fetchedProducts.json();
+        setProducts([...fetchedProducts.products]);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProducts();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-violet-900 to-gray-900 p-6 font-poppins">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-12 text-center">
+          Featured Products
+        </h1>
+
+        {isLoading ? (
+          <div className="font-poppins font-bold text-3xl text-white">
+            Loading...
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product, index) => (
+              <div
+                key={index}
+                className="group relative backdrop-blur-lg bg-gray-800/30 border border-gray-700/50 rounded-2xl overflow-hidden 
+                          hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02]"
+              >
+                <div className="absolute top-4 right-4 z-10">
+                  <span
+                    className={`
+                px-3 py-1 rounded-full text-sm font-medium
+                border
+                bg-blue-500/20 text-blue-400 border-blue-500/20
+              `}
+                  >
+                    Scheduled
+                  </span>
+                </div>
+                <div className="relative h-64 overflow-hidden">
+                  <img
+                    src={product.product_images[0]}
+                    alt="alt"
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src="https://api.dicebear.com/7.x/avataaars/svg?seed=John"
+                      alt="john"
+                      className="w-10 h-10 rounded-full ring-2 ring-purple-500"
+                    />
+                    <span className="text-gray-300 font-medium">john</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1">
+                      {product.product_title}
+                    </h3>
+                    <span className="px-3 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 rounded-full">
+                      {product.product_category.charAt(0).toUpperCase() +
+                        product.product_category.substring(
+                          1,
+                          product.product_category.length
+                        )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-gray-500 text-xs">Original Price</p>
+                      <p className="text-gray-400 line-through">
+                        ₹{product.product_original_price.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-gray-500 text-xs text-left">
+                        Set Price
+                      </p>
+                      <p className="text-green-400 font-bold text-lg">
+                        ₹{product.product_set_price.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-left">Usage Time</p>
+                    <p className="text-gray-300">
+                      {formatUsageTime(product.product_usage_time)}
+                    </p>
+                  </div>
+                  <div className="">
+                    <p className="text-gray-500 text-left">Bid Starts</p>
+                    <p className="text-gray-300">
+                      {formatBidTime(product.bid_start_time)}
+                    </p>
+                  </div>
+                  {product.product_desc && (
+                    <p className="text-gray-400 text-sm">
+                      {product.product_desc}
+                    </p>
+                  )}
+                  {product.product_appeal && (
+                    <div className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3">
+                      <p className="text-purple-300 text-sm italic">
+                        {product.product_appeal}
+                      </p>
+                    </div>
+                  )}
+                  <button
+                    className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg 
+                                  font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProductDisplay;

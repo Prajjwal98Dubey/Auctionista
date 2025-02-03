@@ -68,3 +68,24 @@ export const mapCategoriesToInput = {
   have_fitness_tracker: "number",
   is_wireless: "text",
 };
+
+export const attributesToComponent = {
+  brand_name: "Brand",
+  model_name: "Model",
+  ram_storage: "RAM",
+  rom_storage: "ROM",
+  operating_system: "Operating System",
+  rear_camera: "Rear Camera",
+  front_camera: "Front Camera",
+  product_color: "Color",
+  screen_size: "Screen Size",
+  product_set_price: "Starting Price",
+  original_price: "Original Price",
+  desc: "Description",
+  usage_time: "Usage Time",
+  bid_time: "Bid Time",
+  bid_start_time: "Bid Start Time",
+  product_appeal: "Special",
+  highest_bid: "Highest Bid",
+  cpu: "CPU",
+};

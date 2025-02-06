@@ -2,19 +2,28 @@ import { useEffect } from "react";
 import { DISPLAY_PRODUCTS_API } from "../backendapi";
 import { useState } from "react";
 import { formatBidTime, formatUsageTime } from "../helpers/formatTime";
+import { Link, useLocation } from "react-router-dom";
+import ProductCategory from "./ProductCategory";
 
 const ProductDisplay = () => {
+  let location = useLocation();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(
+    location.search ? location.search.split("=")[1] : "all"
+  );
   useEffect(() => {
     const getProducts = async () => {
       try {
-        let fetchedProducts = await fetch(DISPLAY_PRODUCTS_API, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        let fetchedProducts = await fetch(
+          DISPLAY_PRODUCTS_API + `?category=${selectedCategory}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         fetchedProducts = await fetchedProducts.json();
         setProducts([...fetchedProducts.products]);
         setIsLoading(false);
@@ -23,14 +32,15 @@ const ProductDisplay = () => {
       }
     };
     getProducts();
-  }, []);
+  }, [selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-violet-900 to-gray-900 p-6 font-poppins">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-12 text-center">
-          Featured Products
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-6 font-poppins">
+      <div className="w-full mx-auto">
+        <ProductCategory
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
 
         {isLoading ? (
           <div className="font-poppins font-bold text-3xl text-white">
@@ -70,7 +80,9 @@ const ProductDisplay = () => {
                       alt="john"
                       className="w-10 h-10 rounded-full ring-2 ring-purple-500"
                     />
-                    <span className="text-gray-300 font-medium">john</span>
+                    <span className="text-gray-300 font-medium">
+                      {product.user_name}
+                    </span>
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-white mb-1">
@@ -124,12 +136,16 @@ const ProductDisplay = () => {
                       </p>
                     </div>
                   )}
-                  <button
-                    className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg 
-                                  font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300"
+                  <Link
+                    to={`/product?prodId=${product.product_id}&category=${product.product_category}`}
                   >
-                    View Details
-                  </button>
+                    <button
+                      className="w-full py-3 bg-gradient-to-r from-cyan-700 to-blue-700 text-white rounded-lg 
+                    font-medium hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
+                    >
+                      View Details
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))}

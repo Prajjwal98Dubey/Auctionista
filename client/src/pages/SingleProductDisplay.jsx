@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SINGLE_PRODUCT_DETAILS } from "../backendapi";
+import { DEFAULT_USER_IMAGE, SINGLE_PRODUCT_DETAILS } from "../backendapi";
 import { useSearchParams } from "react-router-dom";
 import { formatBidTime, formatUsageTime } from "../helpers/formatTime";
 import ProductInfoComp from "../custom-tag/ProductInfoComp";
@@ -30,11 +30,11 @@ const SingleProductDisplay = () => {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 py-12 px-4 sm:px-6 lg:px-8 font-inter">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 py-12 px-4 sm:px-6 lg:px-8 font-inter">
       <div className="max-w-7xl mx-auto">
         {isLoading ? (
           <div className="flex justify-center items-center h-screen">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-cyan-500"></div>
           </div>
         ) : (
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl transform transition-all hover:scale-[1.01]">
@@ -54,7 +54,7 @@ const SingleProductDisplay = () => {
                           onClick={() => setCurrentImage(index)}
                           className={`w-2 h-2 rounded-full transition-all ${
                             currentImage === index
-                              ? "w-8 bg-purple-500"
+                              ? "w-8 bg-cyan-500"
                               : "bg-white/50"
                           }`}
                         />
@@ -69,8 +69,8 @@ const SingleProductDisplay = () => {
                       onClick={() => setCurrentImage(index)}
                       className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
                         currentImage === index
-                          ? "border-purple-500 scale-110"
-                          : "border-transparent hover:border-purple-500"
+                          ? "border-cyan-500 scale-110"
+                          : "border-transparent hover:border-cyan-500"
                       }`}
                     >
                       <img
@@ -87,16 +87,20 @@ const SingleProductDisplay = () => {
                   <h1 className="text-4xl font-bold text-white mb-4">
                     {product.title}
                   </h1>
-                  {/* <span className="inline-block px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium">
+                  {/* <span className="inline-block px-4 py-2 bg-cyan-500/20 text-cyan-300 rounded-full text-sm font-medium">
                     {product.product_category}
                   </span> */}
                 </div>
 
                 <div className="flex items-center space-x-4 bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
                   <img
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${product.user_name}`}
+                    src={
+                      product.user_photo === null || !product.user_photo
+                        ? DEFAULT_USER_IMAGE
+                        : product.user_photo
+                    }
                     alt={product.user_name}
-                    className="w-14 h-14 rounded-full ring-2 ring-purple-500"
+                    className="w-14 h-14 rounded-full ring-2 ring-cyan-500"
                   />
                   <div>
                     <p className="text-gray-400 text-sm">Listed by</p>
@@ -118,7 +122,7 @@ const SingleProductDisplay = () => {
                     </p>
                   </div>
                   <div className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
-                    <p className="text-gray-400 text-sm ">Set Price</p>
+                    <p className="text-gray-400 text-sm ">Starting Price</p>
                     <p className="text-2xl text-green-500 font-bold">
                       ₹{product.product_set_price.toLocaleString()}
                     </p>
@@ -139,7 +143,10 @@ const SingleProductDisplay = () => {
                     </p>
                   </div>
                 </div>
-                <button className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl font-bold hover:opacity-90 transition-all transform hover:scale-105 active:scale-95">
+                <button
+                  className="w-full py-4 bg-gradient-to-r from-cyan-700 to-blue-700 text-white rounded-lg 
+                    font-bold hover:shadow-lg hover:shadow-cyan-500/30  duration-300 mt-2 hover:opacity-90 transition-all transform hover:scale-105 active:scale-95"
+                >
                   Place Bid
                 </button>
               </div>
@@ -149,7 +156,7 @@ const SingleProductDisplay = () => {
       </div>
       <div className="max-w-7xl mx-auto mt-12 font-inter">
         <div className="bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl p-8 ">
-          <h2 className="text-2xl font-bold text-white mb-6">
+          <h2 className="text-3xl sm:text-xl font-extrabold mb-6 b text-cyan-700 ">
             Additional Information
           </h2>
           <div className="overflow-x-auto">

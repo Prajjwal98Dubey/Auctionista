@@ -13,6 +13,7 @@ import {
   deleteProduct,
   displayProducts,
   editProduct,
+  getMyProducts,
   getProductDetails,
 } from "../controllers/productController.js";
 
@@ -34,4 +35,5 @@ productRouter
 productRouter.route("/add_headphone").post(authMiddleWare, addHeadPhone);
 productRouter.route("/all_products").get(displayProducts);
 productRouter.route("/prod_details").get(getProductDetails);
+productRouter.route("/my_product_details").get(authMiddleWare, getMyProducts);
 export default productRouter;

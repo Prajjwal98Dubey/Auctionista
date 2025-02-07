@@ -89,3 +89,42 @@ export const attributesToComponent = {
   highest_bid: "Highest Bid",
   cpu: "CPU",
 };
+
+export const mapUserFieldsInput = {
+  user_name: "text",
+  user_email: "text",
+  user_first_name: "text",
+  user_last_name: "text",
+  user_contact_no: "number",
+  user_address_line_1: "text",
+  user_city: "text",
+  user_country: "text",
+  user_image: "file",
+};
+
+export const mapUserFieldDisplayNames = {
+  user_name: "User Name",
+  user_email: "Email",
+  user_first_name: "First Name",
+  user_last_name: "Last Name",
+  user_contact_no: "Contact No.",
+  user_address_line_1: "Address",
+  user_city: "City",
+  user_country: "Country",
+};
+
+export const mapProductCategory = [
+  "all",
+  "mobile",
+  "laptop",
+  "monitor",
+  "keyboard",
+  "mouse",
+  "headphone",
+  "electronics",
+  "painting",
+  "gold",
+  "sivler",
+  "platinum",
+  "diamond",
+];

@@ -779,10 +779,18 @@ export const addGeneralElectronics = async (req, res) => {
 };
 
 export const displayProducts = async (req, res) => {
+  let { category } = req.query;
+  if (category === "electronics") category = "general-electronics";
   try {
-    let latestProducts = await auctionPool.query(
-      "SELECT PRODUCT_ID, PRODUCT_SET_PRICE, PRODUCT_ORIGINAL_PRICE,PRODUCT_TITLE,PRODUCT_DESC,PRODUCT_CATEGORY,PRODUCT_USAGE_TIME,BID_START_TIME,HIGHEST_BID,PRODUCT_APPEAL,PRODUCT_IMAGES FROM PRODUCT"
-    );
+    let latestProducts =
+      category === "all" || category === undefined
+        ? await auctionPool.query(
+            "SELECT PROD.PRODUCT_ID, PROD.PRODUCT_SET_PRICE,PROD.PRODUCT_TITLE,PROD.PRODUCT_USAGE_TIME,PROD.BID_START_TIME,PROD.PRODUCT_IMAGES,PROD.PRODUCT_USER_ID, PROD.PRODUCT_CATEGORY, US.USER_NAME,US.USER_PHOTO FROM PRODUCT PROD INNER JOIN USERS US ON PROD.PRODUCT_USER_ID = US.USER_ID"
+          )
+        : await auctionPool.query(
+            "SELECT PROD.PRODUCT_ID, PROD.PRODUCT_SET_PRICE,PROD.PRODUCT_TITLE,PROD.PRODUCT_USAGE_TIME,PROD.BID_START_TIME,PROD.PRODUCT_IMAGES,PROD.PRODUCT_USER_ID, PROD.PRODUCT_CATEGORY, US.USER_NAME,US.USER_PHOTO FROM PRODUCT PROD INNER JOIN USERS US ON PROD.PRODUCT_USER_ID = US.USER_ID WHERE PROD.PRODUCT_CATEGORY = $1",
+            [category]
+          );
     return res.json({ products: latestProducts.rows }).status(200);
   } catch (error) {
     console.log(error);
@@ -791,6 +799,7 @@ export const displayProducts = async (req, res) => {
 
 export const getProductDetails = async (req, res) => {
   const { prodId, category } = req.query;
+
   try {
     if (categoryToDBCategory[category] === undefined)
       return res.json({ message: "category does not exists." }).status(400);
@@ -799,8 +808,11 @@ export const getProductDetails = async (req, res) => {
       [prodId]
     );
     if (results.rows.length === 0) return res.json;
+    let userDetails = await auctionPool.query(
+      "SELECT USER_NAME,USER_PHOTO FROM USERS WHERE USER_ID = $1",
+      [results.rows[0].user_id]
+    );
     let commonAttr = {
-      product_id: results.rows[0].product_id,
       brand_name: results.rows[0].brand_name,
       model_name: results.rows[0].model_name,
       product_color: results.rows[0].product_color,
@@ -813,7 +825,8 @@ export const getProductDetails = async (req, res) => {
       product_appeal: results.rows[0].product_appeal,
       usage_time: results.rows[0].usage_time,
       bid_time: results.rows[0].bid_time,
-      user_id: results.rows[0].user_id,
+      user_name: userDetails.rows[0].user_name,
+      user_photo: userDetails.rows[0].user_photo,
       highest_bid: results.rows[0].highest_bid,
     };
     switch (category) {
@@ -906,6 +919,19 @@ export const getProductDetails = async (req, res) => {
       default:
         return res.json({ message: "something went wrong." }).status(400);
     }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getMyProducts = async (req, res) => {
+  const user = req.user;
+  try {
+    let productDetails = await auctionPool.query(
+      "SELECT PRODUCT_TITLE,PRODUCT_SET_PRICE,PRODUCT_USAGE_TIME,PRODUCT_IMAGES,PRODUCT_CATEGORY,PRODUCT_ID FROM PRODUCT WHERE PRODUCT_USER_ID = $1",
+      [user]
+    );
+    return res.json({ products: productDetails.rows });
   } catch (error) {
     console.log(error);
   }

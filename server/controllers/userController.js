@@ -63,6 +63,8 @@ export const registerUser = async (req, res) => {
   res.cookie("accessToken", refresh_token, {
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 30 * 1000,
+    sameSite: "lax",
+    secure: false,
   });
   return res
     .json({
@@ -94,10 +96,11 @@ export const loginUser = async (req, res) => {
       res.cookie("accessToken", user.rows[0].user_refresh_token, {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 30 * 1000,
+        sameSite: "lax",
+        secure: false,
       });
       return res
         .json({
-          message: "login success",
           user_name: user.rows[0].user_name,
           user_email: user.rows[0].user_email,
           user_photo: user.rows[0].user_photo,
@@ -186,12 +189,12 @@ export const getLoggedInUserDetails = async (req, res) => {
   const user = req.user;
   try {
     let userDetails = await auctionPool.query(
-      "SELECT user_id,user_name,user_email,user_first_name,user_last_name,users_unique_identifier,user_contact_no,user_address_line_1,user_city,user_country,user_photo,user_role,is_third_party_auth from USERS WHERE USER_ID = $1",
+      "SELECT user_name,user_email,user_first_name,user_last_name,user_contact_no,user_address_line_1,user_city,user_country,user_photo from USERS WHERE USER_ID = $1",
       [user]
     );
     if (!userDetails.rowCount)
       return res.json({ message: "user does not exists" }).status(200);
-    return res.json({ message: "success", ...userDetails.rows[0] }).status(200);
+    return res.json({ ...userDetails.rows[0] }).status(200);
   } catch (error) {
     return res.json({ message: "error" }).status(400);
   }
@@ -212,6 +215,8 @@ export const getUserDetails = async (req, res) => {
   }
 };
 
+/*
+
 export const editUser = async (req, res) => {
   const user = req.user;
   const { attr, new_value } = req.body;
@@ -227,6 +232,43 @@ export const editUser = async (req, res) => {
     return res.json({ message: "updated success" }).status(200);
   } catch (error) {
     return res.json({ message: "error" }).status(400);
+  }
+};
+
+*/
+
+export const editUser = async (req, res) => {
+  const user = req.user;
+  /*
+    
+   if 'UserName' is to be changed then check if the new username does not exists check for contact no for same.
+   
+    */
+
+  const {
+    user_first_name,
+    user_last_name,
+    user_contact_no,
+    user_address_line_1,
+    user_city,
+    user_photo,
+  } = req.body;
+  try {
+    await auctionPool.query(
+      "UPDATE USERS SET user_first_name = $1,user_last_name = $2,user_contact_no = $3,user_address_line_1 = $4,user_city = $5,user_photo = $6 WHERE USER_ID = $7",
+      [
+        user_first_name,
+        user_last_name,
+        user_contact_no,
+        user_address_line_1,
+        user_city,
+        user_photo,
+        user,
+      ]
+    );
+    return res.json({ message: "user updated" }).status(200);
+  } catch (error) {
+    console.log(error);
   }
 };
 

@@ -1,45 +1,76 @@
 import { useEffect, useState } from "react";
-import { USER_DETAILS_API, USER_DETAILS_EDIT_API } from "../backendapi";
+import {
+  DEFAULT_USER_IMAGE,
+  MY_PRODUCT_DETAILS_API,
+  USER_DETAILS_API,
+  USER_DETAILS_EDIT_API,
+} from "../backendapi";
 import UserField from "../custom-tag/UserField";
+import { FaCamera } from "react-icons/fa";
+import { storage } from "../firebase/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
+import { toast } from "react-hot-toast";
+import ListedProduct from "../components/ListedProduct";
 
 const UserProfilePage = () => {
   const [user, setUser] = useState({});
   const [editMode, setEditMode] = useState(false);
   const [userData, setUserData] = useState(user);
+  const [myProducts, setMyProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [products] = useState([
-    {
-      id: 1,
-      name: "Vintage Camera",
-      price: 299.99,
-      description: "Classic film camera from 1980s",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-    },
-    {
-      id: 2,
-      name: "Leather Jacket",
-      price: 159.99,
-      description: "Premium quality genuine leather",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-    },
-  ]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [userPhoto, setUserPhoto] = useState("");
 
-  const handleChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+  const handleImageChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.files[0] });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUser(userData);
     setEditMode(false);
+    const userImageStorageRef = ref(
+      storage,
+      `auction/users/${
+        userData.user_photo.name.split(".")[0] + "-" + Date.now()
+      }`
+    );
+    let downloadedUrl;
+    try {
+      await uploadBytes(userImageStorageRef, userData.user_photo);
+      downloadedUrl = await getDownloadURL(userImageStorageRef);
+      setUserPhoto(downloadedUrl);
+
+      setUserData((prev) => ({
+        ...prev,
+        ["user_photo"]: downloadedUrl,
+      }));
+      // toast.success("User Photo Uploaded....", { duration: 1500 });
+      toast.success("user photo uploaded...", { duration: 1500 });
+    } catch (error) {
+      console.log(error);
+    }
+
     await fetch(USER_DETAILS_EDIT_API, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify(userData),
+      body: JSON.stringify({ ...userData, ["user_photo"]: downloadedUrl }),
     });
+  };
+
+  const getMyProductDetails = async () => {
+    let productDetails = await fetch(MY_PRODUCT_DETAILS_API, {
+      method: "GET",
+      credentials: "include",
+    });
+    productDetails = await productDetails.json();
+    setMyProducts([...productDetails.products]);
+    console.log(productDetails.products);
+    setIsLoadingProducts(false);
   };
 
   useEffect(() => {
@@ -53,15 +84,16 @@ const UserProfilePage = () => {
       setIsLoading(false);
     };
     userDetails();
+    getMyProductDetails();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-violet-900 to-gray-900 p-6 font-inter">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-6 font-inter">
       {!isLoading && (
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white p-6 rounded-xl shadow-lg">
+          <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-500 border-dotted bg-gradient-to-br from-gray-850 via-gray-800 to-gray-950">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-extrabold text-white">
                 Profile Information
               </h2>
               <button
@@ -69,7 +101,7 @@ const UserProfilePage = () => {
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   editMode
                     ? "bg-gray-500 hover:bg-gray-600 text-white"
-                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                    : "bg-gradient-to-r from-cyan-700 to-blue-700 text-white"
                 }`}
               >
                 {editMode ? "Cancel" : "Edit Profile"}
@@ -77,7 +109,7 @@ const UserProfilePage = () => {
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex flex-col items-center mb-6">
-                <img
+                {/* <img
                   src={user.photo}
                   alt="Profile"
                   className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-blue-100"
@@ -91,7 +123,40 @@ const UserProfilePage = () => {
                     placeholder="Photo URL"
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
-                )}
+                )} */}
+                <div className="relative group">
+                  <img
+                    src={
+                      userData.user_photo === null ||
+                      !userData.user_photo ||
+                      !userPhoto
+                        ? DEFAULT_USER_IMAGE
+                        : userData.user_photo
+                    }
+                    alt="Profile"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-gray-800/50 
+               group-hover:border-cyan-500/50 transition-all duration-300"
+                  />
+                  <div className="absolute -top-0 -right-1 z-10">
+                    <label htmlFor="photo-upload" className="cursor-pointer">
+                      <div
+                        className="bg-cyan-500 hover:bg-cyan-600 p-2 rounded-full 
+                    transform transition-all duration-300 hover:scale-110
+                    shadow-lg hover:shadow-cyan-500/50"
+                      >
+                        <FaCamera className="w-4 h-4 text-white" />
+                      </div>
+                    </label>
+                    <input
+                      id="photo-upload"
+                      type="file"
+                      accept="image/*"
+                      name="user_photo"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -120,15 +185,22 @@ const UserProfilePage = () => {
               )}
             </form>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          <div className="bg-gradient-to-br from-gray-850 via-gray-800 to-gray-950 p-6 rounded-xl shadow-lg border border-dotted">
+            <h2 className="text-2xl font-bold text-white mb-6">
               Listed Products
             </h2>
-            <div className="grid grid-cols-1 gap-6">
-              {products.map((product) => (
+            {!isLoadingProducts && (
+              <div className="grid grid-cols-1 gap-6">
+                {myProducts.map((prod) => (
+                  <ListedProduct key={prod.product_id} prod={prod} />
+                ))}
+
+                {/* {products.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-gray-50 p-4 rounded-xl hover:shadow-md transition-shadow"
+                  className="w-full   bg-gray-800 border border-gray-700 
+          text-white focus:ring-2 focus:ring-purple-500 
+          focus:border-purple-500  duration-300 p-4 rounded-xl hover:shadow-md transition-shadow"
                 >
                   <img
                     src={product.image}
@@ -143,8 +215,9 @@ const UserProfilePage = () => {
                   </p>
                   <p className="text-gray-600 text-sm">{product.description}</p>
                 </div>
-              ))}
-            </div>
+              ))} */}
+              </div>
+            )}
           </div>
         </div>
       )}

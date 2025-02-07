@@ -354,6 +354,7 @@ export const callAddProducts = async (category, details, images) => {
       !details.usage_time ||
       !details.bid_start_time ||
       !details.bid_time ||
+      !details.product_appeal ||
       images.length === 0
     ) {
       return alert("enter all mandatory fields");

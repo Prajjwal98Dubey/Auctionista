@@ -10,7 +10,7 @@ const UserField = ({ attr, attrVal, editMode, userData, setUserData }) => {
   };
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-gray-400 mb-1">
         {mapUserFieldDisplayNames[attr]}
       </label>
       {editMode ? (
@@ -21,10 +21,18 @@ const UserField = ({ attr, attrVal, editMode, userData, setUserData }) => {
           onChange={(e) => {
             handleChange(e);
           }}
-          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 
+          text-white focus:ring-2 focus:ring-purple-500 
+          focus:border-purple-500 transition-all duration-300"
         />
       ) : (
-        <p className="p-2 bg-gray-50 rounded-lg h-[35px] ">{attrVal}</p>
+        <p
+          className="w-full p-2 h-[40px] rounded-lg bg-gray-800 border border-gray-700 
+          text-white focus:ring-2 focus:ring-purple-500 
+          focus:border-purple-500 transition-all duration-300"
+        >
+          {attrVal}
+        </p>
       )}
     </div>
   );

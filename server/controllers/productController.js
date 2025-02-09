@@ -364,7 +364,7 @@ export const addWatch = async (req, res) => {
         model_name,
         product_color,
         parseInt(diameter),
-        parseInt(is_digital),
+        is_digital,
         is_calling_available,
         have_fitness_tracker,
         user,
@@ -380,6 +380,7 @@ export const addWatch = async (req, res) => {
         bid_time,
       ]
     );
+
     return res.json({ message: "product added!!!" }).status(201);
   } catch (error) {
     return res.json({ message: "error" }).status(400);
@@ -681,7 +682,7 @@ export const addMouse = async (req, res) => {
         brand_name,
         model_name,
         product_color,
-        parseInt(is_wireless),
+        is_wireless == "no" ? 0 : 1,
         set_price,
         original_price,
         title,
@@ -697,6 +698,7 @@ export const addMouse = async (req, res) => {
     );
     return res.json({ mesage: "product added!!!" }).status(201);
   } catch (error) {
+    console.log(error);
     return res.json({ message: "error" }).status(400);
   }
 };

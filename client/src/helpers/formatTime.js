@@ -60,3 +60,14 @@ export const formatBidTime = (time) => {
     displaytime
   );
 };
+
+export const divideTimeIntoThreeParts = (time) => {
+  const givenTime = new Date(time).getTime();
+  const currTime = Date.now();
+  const diffTime = givenTime - currTime;
+  let hours = Math.floor(diffTime / (1000 * 60 * 60));
+  let minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+  let seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+
+  return hours + ":" + minutes + ":" + seconds;
+};

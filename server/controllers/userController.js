@@ -286,3 +286,31 @@ export const deleteUser = async (req, res) => {
     return res.json({ message: "error" }).status(400);
   }
 };
+
+export const getMyBookMark = async (req, res) => {
+  const user = req.user;
+  try {
+    let bookMarkProductList = await auctionPool.query(
+      "SELECT PRODUCT_ID, PRODUCT_SET_PRICE,PRODUCT_TITLE,PRODUCT_USAGE_TIME,BID_START_TIME,PRODUCT_IMAGES,PRODUCT_USER_ID PRODUCT_CATEGORY FROM PRODUCT WHERE PRODUCT_ID IN (SELECT PRODUCT_ID FROM BOOKMARK WHERE USER_ID = $1)",
+      [user]
+    );
+    return res.json(bookMarkProductList.rows).status(200);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addToBookMark = async (req, res) => {
+  const user = req.user;
+  const { productId } = req.body;
+  try {
+    const bookmarkId = nanoid();
+    await auctionPool.query(
+      "INSERT INTO BOOKMARK (BOOKMARK_ID,PRODUCT_ID,USER_ID) VALUES ($1,$2,$3)",
+      [bookmarkId, productId, user]
+    );
+    return res.json({ message: "product added.." }).status(201);
+  } catch (error) {
+    console.log(error);
+  }
+};

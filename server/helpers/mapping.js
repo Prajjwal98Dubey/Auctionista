@@ -1,6 +1,6 @@
 export const categoryToDBCategory = {
   mobile: "MOBILE_SPEC",
-  laptop: "LAPTOP_SPCEC",
+  laptop: "LAPTOP_SPEC",
   monitor: "MONITOR_SPEC",
   keyboard: "KEYBOARD_SPEC",
   mouse: "MOUSE_SPEC",

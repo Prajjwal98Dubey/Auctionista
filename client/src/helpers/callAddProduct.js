@@ -147,7 +147,7 @@ export const callAddProducts = async (category, details, images) => {
           model_name: details.model_name,
           product_color: details.product_color,
           diameter: details.diameter,
-          is_digital: parseInt(details.is_digital),
+          is_digital: details.is_digital,
           is_calling_available: parseInt(details.is_calling_available),
           have_fitness_tracker: parseInt(details.have_fitness_tracker),
           set_price: parseInt(details.set_price),

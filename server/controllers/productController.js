@@ -603,7 +603,7 @@ export const addHeadPhone = async (req, res) => {
         brand_name,
         model_name,
         product_color,
-        parseInt(is_wireless),
+        is_wireless,
         set_price,
         original_price,
         title,

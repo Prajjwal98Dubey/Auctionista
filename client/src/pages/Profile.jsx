@@ -4,8 +4,10 @@ import {
   MY_PRODUCT_DETAILS_API,
   USER_DETAILS_EDIT_API,
 } from "../backendapi";
+import { FaEdit } from "react-icons/fa";
 import UserField from "../custom-tag/UserField";
 import { FaCamera } from "react-icons/fa";
+import { HiPlus } from "react-icons/hi";
 import { storage } from "../firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
@@ -13,6 +15,7 @@ import { toast } from "react-hot-toast";
 import ListedProduct from "../components/ListedProduct";
 import UserInfoContext from "../context/userInfoContext";
 import BookMark from "../components/BookMark";
+import { Link } from "react-router-dom";
 const UserProfilePage = () => {
   const [user, setUser] = useState({});
   const [editMode, setEditMode] = useState(false);
@@ -75,23 +78,11 @@ const UserProfilePage = () => {
     });
     productDetails = await productDetails.json();
     setMyProducts([...productDetails.products]);
-    console.log(productDetails.products);
     setIsLoading(false);
     setIsLoadingProducts(false);
   };
 
   useEffect(() => {
-    // const userDetails = async () => {
-    //   let details = await fetch(USER_DETAILS_API, {
-    //     method: "GET",
-    //     credentials: "include",
-    //   });
-    //   details = await details.json();
-    //   setUserData({ ...details });
-    //   setUserInfo({ ...details });
-    //   setIsLoading(false);
-    // };
-    // userDetails();
     getMyProductDetails();
   }, []);
 
@@ -107,13 +98,19 @@ const UserProfilePage = () => {
                 </h2>
                 <button
                   onClick={() => setEditMode(!editMode)}
-                  className={`px-4 py-2 rounded-lg transition-colors font-bold ${
+                  className={` px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-colors font-bold  ${
                     editMode
                       ? "bg-gray-500 hover:bg-gray-600 text-white"
                       : "bg-gradient-to-r from-cyan-700 to-blue-700 text-white hover:bg-gradient-to-r hover:from-cyan-800 hover:to-blue-800"
                   }`}
                 >
-                  {editMode ? "Cancel" : "Edit Profile"}
+                  {editMode ? (
+                    "Cancel"
+                  ) : (
+                    <div className="w-full h-full flex justify-center items-center">
+                      <FaEdit className="text-white text-center" />
+                    </div>
+                  )}
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -206,6 +203,23 @@ const UserProfilePage = () => {
                   <p className="text-gray-600 text-sm">{product.description}</p>
                 </div>
               ))} */}
+                </div>
+              )}
+              {!isLoading && myProducts.length === 0 && (
+                <div className="text-center py-20 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10">
+                  <h3 className="text-2xl font-bold text-white mb-2 font-inter">
+                    No items Listed ...
+                  </h3>
+
+                  <Link
+                    to="/add"
+                    className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 
+                               rounded-md text-white font-medium hover:from-cyan-600 hover:to-blue-600 
+                               transition-all duration-300 transform hover:scale-105 text-[17px] sm:text-xl"
+                  >
+                    <HiPlus className="w-5 h-5 mr-2 font-bold" />
+                    Add Products
+                  </Link>
                 </div>
               )}
             </div>

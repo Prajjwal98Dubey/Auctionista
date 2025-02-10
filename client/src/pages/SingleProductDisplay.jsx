@@ -4,12 +4,14 @@ import { useSearchParams } from "react-router-dom";
 import { formatBidTime, formatUsageTime } from "../helpers/formatTime";
 import ProductInfoComp from "../custom-tag/ProductInfoComp";
 import { attributesToComponent } from "../helpers/mapCategoryToOptions";
+import { timeLeftForAuction } from "../helpers/auctionTimerfn";
 
 const SingleProductDisplay = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [product, setProduct] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [searchParams] = useSearchParams();
+  const [auctionStatus, setAuctionStatus] = useState(false); // false => auction completed.
 
   useEffect(() => {
     const getProductDetails = async () => {
@@ -24,6 +26,13 @@ const SingleProductDisplay = () => {
       );
       productDetails = await productDetails.json();
       setProduct(productDetails.details);
+      let status = timeLeftForAuction(productDetails.details.bid_start_time);
+      if (
+        status.toLocaleLowerCase() === "scheduled" ||
+        status.toLocaleLowerCase() === "coming soon"
+      ) {
+        setAuctionStatus(true);
+      }
       setIsLoading(false);
     };
     getProductDetails();
@@ -84,15 +93,12 @@ const SingleProductDisplay = () => {
               </div>
               <div className="p-8 bg-white/5 space-y-8">
                 <div>
-                  <h1 className="text-4xl font-bold text-white mb-4">
+                  <h1 className=" text-xl sm:text-4xl font-bold text-white mb-4">
                     {product.title}
                   </h1>
-                  {/* <span className="inline-block px-4 py-2 bg-cyan-500/20 text-cyan-300 rounded-full text-sm font-medium">
-                    {product.product_category}
-                  </span> */}
                 </div>
 
-                <div className="flex items-center space-x-4 bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
+                <div className=" flex items-center space-x-4 bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
                   <img
                     src={
                       product.user_photo === null || !product.user_photo
@@ -102,9 +108,11 @@ const SingleProductDisplay = () => {
                     alt={product.user_name}
                     className="w-14 h-14 rounded-full ring-2 ring-cyan-500"
                   />
-                  <div>
-                    <p className="text-gray-400 text-sm">Listed by</p>
-                    <p className="text-white font-medium text-lg">
+                  <div className="">
+                    <p className="text-gray-400 text-[12px] sm:text-sm">
+                      Listed by
+                    </p>
+                    <p className="text-white font-medium text-[15px] sm:text-lg">
                       {product.user_name.charAt(0).toUpperCase() +
                         product.user_name.substring(
                           1,
@@ -116,14 +124,18 @@ const SingleProductDisplay = () => {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
-                    <p className="text-gray-400 text-sm">Original Price</p>
-                    <p className="text-2xl text-white line-through font-bold">
+                    <p className="text-gray-400 text-[12px] sm:text-sm">
+                      Original Price
+                    </p>
+                    <p className="text-[18px] sm:text-2xl text-white line-through font-bold">
                       ₹{product.original_price.toLocaleString()}
                     </p>
                   </div>
                   <div className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
-                    <p className="text-gray-400 text-sm ">Starting Price</p>
-                    <p className="text-2xl text-green-500 font-bold">
+                    <p className="text-gray-400 text-[12px] sm:text-sm">
+                      Starting Price
+                    </p>
+                    <p className="text-[18px] sm:text-2xl text-green-500 font-bold">
                       ₹{product.product_set_price.toLocaleString()}
                     </p>
                   </div>
@@ -131,23 +143,32 @@ const SingleProductDisplay = () => {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
-                    <p className="text-gray-400 text-sm">Usage Time</p>
-                    <p className="text-white text-lg">
+                    <p className="text-gray-400 text-[12px] sm:text-sm">
+                      Usage Time
+                    </p>
+                    <p className="text-white text-[20px] sm:text-2xl">
                       {formatUsageTime(product.usage_time)}
                     </p>
                   </div>
                   <div className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
-                    <p className="text-gray-400 text-sm">Bid Starts</p>
-                    <p className="text-white text-lg">
+                    <p className="text-gray-400 text-[12px] sm:text-sm">
+                      Bid Starts
+                    </p>
+                    <p className="text-white text-[13px] sm:text-lg">
                       {formatBidTime(product.bid_start_time)}
                     </p>
                   </div>
                 </div>
                 <button
-                  className="w-full py-4 bg-gradient-to-r from-cyan-700 to-blue-700 text-white rounded-lg 
-                    font-bold hover:shadow-lg hover:shadow-cyan-500/30  duration-300 mt-2 hover:opacity-90 transition-all transform hover:scale-105 active:scale-95"
+                  className={`w-full  py-4 bg-gradient-to-r ${
+                    auctionStatus
+                      ? "from-cyan-700 to-blue-700 hover:shadow-lg hover:shadow-cyan-500/30 hover:opacity-90 hover:scale-105 active:scale-95 cursor-pointer"
+                      : "from-gray-500 to-gray-600 cursor-not-allowed"
+                  }  text-white rounded-lg 
+                    font-bold   duration-300 mt-2  transition-all transform `}
+                  disabled={auctionStatus == false}
                 >
-                  Place Bid
+                  {auctionStatus ? "Place Bid" : "Auction Over"}
                 </button>
               </div>
             </div>
@@ -179,7 +200,7 @@ const SingleProductDisplay = () => {
                     value !== null &&
                     value.toString().length >= 1 && (
                       <tr key={key} className="bg-gray-800/20">
-                        <td className="py-2 px-4 text-sm">
+                        <td className="py-2 px-4 text-[12px] sm:text-sm">
                           {attributesToComponent[key]}
                         </td>
                         <ProductInfoComp prodKey={key} value={value} />

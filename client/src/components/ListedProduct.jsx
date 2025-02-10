@@ -13,8 +13,9 @@ const ListedProduct = ({ prod }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0"></div>
         <div className="absolute top-4 left-4">
-          <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/20">
-            {prod.product_category}
+          <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-500 border border-purple-600/20">
+            {prod.product_category.charAt(0).toUpperCase() +
+              prod.product_category.substring(1, prod.product_category.length)}
           </span>
         </div>
       </div>
@@ -23,7 +24,7 @@ const ListedProduct = ({ prod }) => {
           {prod.product_title}
         </h3>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex justify-between">
           <div>
             <p className="text-gray-400 text-xs">Usage Time</p>
             <p className="text-gray-300">

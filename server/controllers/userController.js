@@ -291,7 +291,7 @@ export const getMyBookMark = async (req, res) => {
   const user = req.user;
   try {
     let bookMarkProductList = await auctionPool.query(
-      "SELECT PRODUCT_ID, PRODUCT_SET_PRICE,PRODUCT_TITLE,PRODUCT_USAGE_TIME,BID_START_TIME,PRODUCT_IMAGES,PRODUCT_USER_ID PRODUCT_CATEGORY FROM PRODUCT WHERE PRODUCT_ID IN (SELECT PRODUCT_ID FROM BOOKMARK WHERE USER_ID = $1)",
+      "SELECT PRODUCT_ID, PRODUCT_SET_PRICE,PRODUCT_TITLE,PRODUCT_USAGE_TIME,BID_START_TIME,PRODUCT_IMAGES,PRODUCT_CATEGORY FROM PRODUCT WHERE PRODUCT_ID IN (SELECT PRODUCT_ID FROM BOOKMARK WHERE USER_ID = $1)",
       [user]
     );
     return res.json(bookMarkProductList.rows).status(200);
@@ -313,4 +313,17 @@ export const addToBookMark = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const deleteBookMark = async (req, res) => {
+  const { productId } = req.query;
+  try {
+    await auctionPool.query("DELETE FROM BOOKMARK WHERE PRODUCT_ID = $1 ", [
+      productId,
+    ]);
+    return res.json({ message: "bookmark deleted !!!" }).status(201);
+  } catch (error) {
+    console.log(error);
+  }
+  f;
 };

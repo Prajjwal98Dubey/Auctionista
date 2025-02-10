@@ -5,6 +5,8 @@ export const USER_DETAILS_EDIT_API =
   "http://localhost:5001/api/v1/auth/edit_user";
 export const GET_BOOKMARKS = "http://localhost:5001/api/v1/auth/get_bookmark";
 export const ADD_BOOKMARKS = "http://localhost:5001/api/v1/auth/add_bookmark";
+export const DELETE_BOOKMARK =
+  "http://localhost:5001/api/v1/auth/delete_bookmark";
 
 /* PRODUCT */
 export const PRODUCT_ADD = "http://localhost:5001/api/v1/product/add";

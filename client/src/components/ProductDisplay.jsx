@@ -1,10 +1,17 @@
-import { useEffect } from "react";
-import { DEFAULT_USER_IMAGE, DISPLAY_PRODUCTS_API } from "../backendapi";
+import { useContext, useEffect } from "react";
+import {
+  ADD_BOOKMARKS,
+  DEFAULT_USER_IMAGE,
+  DELETE_BOOKMARK,
+  DISPLAY_PRODUCTS_API,
+} from "../backendapi";
 import { useState } from "react";
 import { formatUsageTime } from "../helpers/formatTime";
-import { FaRegBookmark } from "react-icons/fa";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import ProductCategory from "./ProductCategory";
+import { BookMarkContext } from "../context/BookMarkContext";
+import AuctionTimer from "./AuctionTimer";
 
 const ProductDisplay = () => {
   let location = useLocation();
@@ -13,6 +20,7 @@ const ProductDisplay = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     location.search ? location.search.split("=")[1] : "all"
   );
+  const { bookMarkInfo, setBookMarkInfo } = useContext(BookMarkContext);
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -34,7 +42,29 @@ const ProductDisplay = () => {
     };
     getProducts();
   }, [selectedCategory]);
-
+  const handleAddToBookMark = async (prod) => {
+    if (
+      bookMarkInfo.filter((p) => p.product_id === prod.product_id).length > 0
+    ) {
+      setBookMarkInfo([
+        ...bookMarkInfo.filter((p) => p.product_id !== prod.product_id),
+      ]);
+      await fetch(DELETE_BOOKMARK + `?productId=${prod.product_id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+    } else {
+      setBookMarkInfo((prev) => [...prev, prod]);
+      await fetch(ADD_BOOKMARKS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ productId: prod.product_id }),
+      });
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-6 font-inter">
       <div className="w-full mx-auto">
@@ -74,8 +104,24 @@ const ProductDisplay = () => {
                 border
                 bg-blue-500/20 text-blue-400 border-blue-500/20 hover:bg-red-500 cursor-pointer
               `} */}
-                  <FaRegBookmark className="hover:cursor-pointer w-[30px] h-[23px]" />
+
+                  {bookMarkInfo.filter(
+                    (prod) => prod.product_id === product.product_id
+                  ).length > 0 ? (
+                    <FaBookmark
+                      className="hover:cursor-pointer w-[30px] h-[23px] text-green-400"
+                      onClick={() => handleAddToBookMark(product)}
+                    />
+                  ) : (
+                    <FaRegBookmark
+                      className="hover:cursor-pointer w-[30px] h-[23px] text-white"
+                      onClick={() => handleAddToBookMark(product)}
+                    />
+                  )}
                   {/* </span> */}
+                </div>
+                <div className="absolute top-4 left-2 z-10">
+                  <AuctionTimer bid_start_time={product.bid_start_time} />
                 </div>
                 <div className="relative h-64 overflow-hidden">
                   <img

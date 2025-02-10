@@ -1,6 +1,7 @@
 import express from "express";
 import {
   addToBookMark,
+  deleteBookMark,
   deleteUser,
   editUser,
   getLoggedInUserDetails,
@@ -25,5 +26,6 @@ userRouter.route("/edit_user").put(authMiddleWare, editUser);
 userRouter.route("/delete_user").delete(authMiddleWare, deleteUser);
 userRouter.route("/get_bookmark").get(authMiddleWare, getMyBookMark);
 userRouter.route("/add_bookmark").post(authMiddleWare, addToBookMark);
+userRouter.route("/delete_bookmark").delete(authMiddleWare, deleteBookMark);
 
 export default userRouter;

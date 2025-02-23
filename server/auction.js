@@ -13,17 +13,15 @@ const roomMaxValue = {};
 
 io.on("connection", (socket) => {
   console.log("user connected!!");
-  socket.on("join-room", ({ roomId, userName }) => {
+  socket.on("join-room", ({ roomId, userName, roomInitBidValue }) => {
     socket.username = userName;
     socket.join(roomId);
+    roomMaxValue[roomId] = roomInitBidValue;
   });
   socket.on("c_updated_value", () => {
     for (let room of socket.rooms) {
       if (room !== socket.id) {
-        io.to(room).emit(
-          "s_updated_value",
-          roomMaxValue[room] ? roomMaxValue[room] : 1000
-        );
+        io.to(room).emit("s_updated_value", roomMaxValue[room]);
       }
     }
   });

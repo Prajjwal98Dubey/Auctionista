@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { DEFAULT_USER_IMAGE, SINGLE_PRODUCT_DETAILS } from "../backendapi";
-import { useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { formatBidTime, formatUsageTime } from "../helpers/formatTime";
 import ProductInfoComp from "../custom-tag/ProductInfoComp";
 import { attributesToComponent } from "../helpers/mapCategoryToOptions";
@@ -12,7 +12,7 @@ const SingleProductDisplay = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const [auctionStatus, setAuctionStatus] = useState(false); // false => auction completed.
-
+  const location = useLocation();
   useEffect(() => {
     const getProductDetails = async () => {
       let productDetails = await fetch(
@@ -29,7 +29,8 @@ const SingleProductDisplay = () => {
       let status = timeLeftForAuction(productDetails.details.bid_start_time);
       if (
         status.toLocaleLowerCase() === "scheduled" ||
-        status.toLocaleLowerCase() === "coming soon"
+        status.toLocaleLowerCase() === "coming soon" ||
+        status.toLocaleLowerCase() === "ongoing"
       ) {
         setAuctionStatus(true);
       }
@@ -68,6 +69,18 @@ const SingleProductDisplay = () => {
                           }`}
                         />
                       ))}
+                      {console.log(
+                        JSON.parse(
+                          localStorage.getItem("auctioned-to-be")
+                        ).filter(
+                          (prod) =>
+                            prod.product_id ===
+                            location.search
+                              .substring(1)
+                              .split("&")[0]
+                              .split("=")[1]
+                        )[0].start_price
+                      )}
                     </div>
                   </div>
                 </div>
@@ -159,17 +172,19 @@ const SingleProductDisplay = () => {
                     </p>
                   </div>
                 </div>
-                <button
-                  className={`w-full  py-4 bg-gradient-to-r ${
-                    auctionStatus
-                      ? "from-cyan-700 to-blue-700 hover:shadow-lg hover:shadow-cyan-500/30 hover:opacity-90 hover:scale-105 active:scale-95 cursor-pointer"
-                      : "from-gray-500 to-gray-600 cursor-not-allowed"
-                  }  text-white rounded-lg 
+                <Link to={"/bid" + location.search}>
+                  <button
+                    className={`w-full  py-4 bg-gradient-to-r ${
+                      auctionStatus
+                        ? "from-cyan-700 to-blue-700 hover:shadow-lg hover:shadow-cyan-500/30 hover:opacity-90 hover:scale-105 active:scale-95 cursor-pointer"
+                        : "from-gray-500 to-gray-600 cursor-not-allowed"
+                    }  text-white rounded-lg 
                     font-bold   duration-300 mt-2  transition-all transform `}
-                  disabled={auctionStatus == false}
-                >
-                  {auctionStatus ? "Place Bid" : "Auction Over"}
-                </button>
+                    disabled={auctionStatus == false}
+                  >
+                    {auctionStatus ? "Place Bid" : "Auction Over"}
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

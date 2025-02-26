@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { connectRedisServer } from "./redisClient.js";
 const app = express();
 
 const httpServer = createServer(app);
@@ -9,32 +10,39 @@ const io = new Server(httpServer, {
   cors: "*",
 });
 
-const roomMaxValue = {};
+let client;
+const startRedis = async () => {
+  client = await connectRedisServer();
+};
+
+startRedis();
 
 io.on("connection", (socket) => {
-  console.log("user connected!!");
-  socket.on("join-room", ({ roomId, userName, roomInitBidValue }) => {
+  socket.on("join-room", async ({ roomId, userName, roomInitBidValue }) => {
     socket.username = userName;
     socket.join(roomId);
-    roomMaxValue[roomId] = roomInitBidValue;
+    if (client != undefined && client.isOpen) {
+      if ((await client.get(roomId)) == null) {
+        await client.set(roomId, roomInitBidValue);
+      }
+    }
   });
-  socket.on("c_updated_value", () => {
+  socket.on("c_updated_value", async ({ roomId }) => {
+    let presentMaxValueInRoom = await client.get(roomId);
     for (let room of socket.rooms) {
       if (room !== socket.id) {
-        io.to(room).emit("s_updated_value", roomMaxValue[room]);
+        io.to(room).emit("s_updated_value", presentMaxValueInRoom);
       }
     }
   });
   io.emit("online_users", { online_user: io.engine.clientsCount });
 
-  socket.on("c_new_bid", ({ userName, newPrice, roomId }) => {
+  socket.on("c_new_bid", async ({ userName, newPrice, roomId }) => {
     io.to(roomId).emit("s_new_bid", { userName, newPrice });
-    roomMaxValue[roomId] = roomMaxValue[roomId]
-      ? Math.max(roomMaxValue, newPrice)
-      : newPrice;
+
+    await client.set(roomId, newPrice);
   });
   socket.on("disconnecting", () => {
-    console.log(socket.rooms);
     for (let room of socket.rooms) {
       if (room !== socket.id) {
         socket.to(room).emit("room_details", "user disconnected");

@@ -13,6 +13,7 @@ const io = new Server(httpServer, {
 let client;
 const startRedis = async () => {
   client = await connectRedisServer();
+  console.log("redis connected !!!");
 };
 
 startRedis();
@@ -25,10 +26,17 @@ io.on("connection", (socket) => {
       if ((await client.get(roomId)) == null) {
         await client.set(roomId, roomInitBidValue);
       }
+    } else if (!client.isOpen) {
+      client = await connectRedisServer();
+      console.log("redis connected !!!");
+      if ((await client.get(roomId)) == null) {
+        await client.set(roomId, roomInitBidValue);
+      }
     }
   });
   socket.on("c_updated_value", async ({ roomId }) => {
     let presentMaxValueInRoom = await client.get(roomId);
+
     for (let room of socket.rooms) {
       if (room !== socket.id) {
         io.to(room).emit("s_updated_value", presentMaxValueInRoom);
@@ -39,7 +47,6 @@ io.on("connection", (socket) => {
 
   socket.on("c_new_bid", async ({ userName, newPrice, roomId }) => {
     io.to(roomId).emit("s_new_bid", { userName, newPrice });
-
     await client.set(roomId, newPrice);
   });
   socket.on("disconnecting", () => {

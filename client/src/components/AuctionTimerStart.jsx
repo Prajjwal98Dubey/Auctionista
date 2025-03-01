@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
 import { divideTimeIntoThreeParts } from "../helpers/formatTime";
+import AuctionEndComp from "./AuctionEndComp";
 
-const AuctionTimerStart = ({ bid_start_time }) => {
+const AuctionTimerStart = ({ bid_start_time, isCallBack }) => {
   const [hours, setHours] = useState(
     divideTimeIntoThreeParts(bid_start_time).split(":")[0]
   );
@@ -21,7 +22,7 @@ const AuctionTimerStart = ({ bid_start_time }) => {
           setHours((prev) =>
             parseInt(prev) - 1 < 10
               ? "0" + (parseInt(prev) - 1).toString()
-              : parseInt(prev) - 1
+              : (parseInt(prev) - 1).toString()
           );
           setMinutes("59");
           setSeconds("59");
@@ -30,7 +31,7 @@ const AuctionTimerStart = ({ bid_start_time }) => {
           setMinutes((prev) =>
             parseInt(prev) - 1 < 10
               ? "0" + (parseInt(prev) - 1).toString()
-              : parseInt(prev) - 1
+              : (parseInt(prev) - 1).toString()
           );
         } else {
           clearInterval(intervalRef.current);
@@ -43,15 +44,23 @@ const AuctionTimerStart = ({ bid_start_time }) => {
         setSeconds((prev) =>
           parseInt(prev) - 1 < 10
             ? "0" + (parseInt(prev) - 1).toString()
-            : parseInt(prev) - 1
+            : (parseInt(prev) - 1).toString()
         );
       }, [1000]);
     }
   }, [hours, minutes, seconds]);
 
   return (
-    <div className="bg-opacity-30 backdrop-blur-md text-white text-sm font-bold px-3 py-1 rounded-[20px] border border-gray-400 w-[84px] h-[30px] ">
-      {hours + ":" + minutes + ":" + seconds}
+    <div className="bg-opacity-30 backdrop-blur-md text-white text-sm font-extrabold px-3 py-1 rounded-[20px] border border-gray-400 w-[84px] h-[30px] bg-[#010101] ">
+      {(parseInt(hours) != 0 ||
+        parseInt(minutes) != 0 ||
+        parseInt(seconds) != 0) && (
+        <p className="text-center">{hours + ":" + minutes + ":" + seconds}</p>
+      )}
+      {parseInt(hours) == 0 &&
+        parseInt(minutes) == 0 &&
+        parseInt(seconds) == 0 &&
+        isCallBack && <AuctionEndComp />}
     </div>
   );
 };

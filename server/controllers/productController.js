@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import auctionPool from "../db/connectDB.js";
 import { categoryToDBCategory } from "../helpers/mapping.js";
+import { connectRedisServer } from "../redisClient.js";
 
 export const addProduct = async (req, res) => {
   const user = req.user;
@@ -830,6 +831,8 @@ export const getProductDetails = async (req, res) => {
       user_name: userDetails.rows[0].user_name,
       user_photo: userDetails.rows[0].user_photo,
       highest_bid: results.rows[0].highest_bid,
+      product_id: results.rows[0].product_id,
+      product_category: results.rows[0].product_category,
     };
     switch (category) {
       case "mobile":
@@ -934,6 +937,57 @@ export const getMyProducts = async (req, res) => {
       [user]
     );
     return res.json({ products: productDetails.rows });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateHighestBidOfProduct = async (req, res) => {
+  const { prodId } = req.query;
+  try {
+    let redisClient = await connectRedisServer();
+    let isProductPresentInRedis = await redisClient.get(prodId);
+    if (isProductPresentInRedis == null) {
+      return res.json({
+        message: "something went wrong while fetching highest bid.",
+      });
+    } else {
+      await auctionPool.query(
+        "UPDATE PRODUCT SET HIGHEST_BID = $1 WHERE PRODUCT_ID = $2",
+        [parseInt(isProductPresentInRedis), prodId]
+      );
+      return res.json({ message: "highest bid update success." }).status(201);
+    }
+  } catch {
+    (e) => console.log(e);
+  }
+};
+
+export const updateHighestBidOfSpecificProduct = async (req, res) => {
+  const { prodId, category } = req.query;
+  try {
+    let redisClient = await connectRedisServer();
+    let isKeyPresent = await redisClient.get(prodId);
+    if (isKeyPresent == null)
+      return res.json({
+        message: "something went wrong while fetching highest bid.",
+      });
+    else {
+      /*
+      console.log(prodId);
+      console.log(category);
+      console.log(parseInt(isKeyPresent));
+      console.log(
+        `UPDATE ${categoryToDBCategory[category]} SET HIGHEST_BID = $1 WHERE PRODUCT_ID = $2`
+      );
+      */
+
+      await auctionPool.query(
+        `UPDATE ${categoryToDBCategory[category]} SET HIGHEST_BID = $1 WHERE PRODUCT_ID = $2`,
+        [parseInt(isKeyPresent), prodId]
+      );
+      return res.json({ message: "highest bid update success." }).status(201);
+    }
   } catch (error) {
     console.log(error);
   }

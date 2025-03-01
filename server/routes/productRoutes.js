@@ -15,6 +15,8 @@ import {
   editProduct,
   getMyProducts,
   getProductDetails,
+  updateHighestBidOfProduct,
+  updateHighestBidOfSpecificProduct,
 } from "../controllers/productController.js";
 
 const productRouter = express.Router();
@@ -36,4 +38,9 @@ productRouter.route("/add_headphone").post(authMiddleWare, addHeadPhone);
 productRouter.route("/all_products").get(displayProducts);
 productRouter.route("/prod_details").get(getProductDetails);
 productRouter.route("/my_product_details").get(authMiddleWare, getMyProducts);
+productRouter.route("/update_product_bid").get(updateHighestBidOfProduct);
+productRouter
+  .route("/update_specific_product_bid")
+  .get(updateHighestBidOfSpecificProduct);
+
 export default productRouter;

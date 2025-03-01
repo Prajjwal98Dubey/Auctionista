@@ -8,18 +8,6 @@ const AuctionTimer = ({ bid_start_time }) => {
   const [bidStatus, setBidStatus] = useState("");
   const [timer, setTimer] = useState(false);
   useEffect(() => {
-    // const timeLeftForAuction = (time) => {
-    //   const givenTime = new Date(time).getTime();
-    //   const currTime = Date.now();
-    //   const miliSecondsInDay = 24 * 60 * 60 * 1000;
-    //   if (givenTime - currTime < 0) return "Ended";
-    //   else if (givenTime - currTime > 0) {
-    //     if (givenTime - currTime <= miliSecondsInDay) {
-    //       return "Coming Soon";
-    //     }
-    //     return "Scheduled";
-    //   } else return "Ongoing";
-    // };
     let result = timeLeftForAuction(bid_start_time);
     if (result === "Coming Soon") {
       setTimer(true);
@@ -33,7 +21,10 @@ const AuctionTimer = ({ bid_start_time }) => {
     <>
       {!isLoading &&
         (timer ? (
-          <AuctionTimerStart bid_start_time={bid_start_time} />
+          <AuctionTimerStart
+            bid_start_time={bid_start_time}
+            isCallBack={false}
+          />
         ) : (
           <div
             className={`text-white flex justify-center items-center font-bold bg-gradient-to-r ${

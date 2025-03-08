@@ -3,11 +3,12 @@ import { FaSearch, FaBell, FaRegBookmark } from "react-icons/fa";
 import { useState, useContext } from "react";
 import UserInfoContext from "../context/userInfoContext";
 import { DEFAULT_USER_IMAGE } from "../backendapi";
+import SearchComp from "./SearchComp";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
   const { userInfo } = useContext(UserInfoContext);
-
   return (
     <nav className="fixed w-full top-0 z-50 font-inter">
       <div className="bg-gray-900/90 backdrop-blur-xl border-b border-white/10">
@@ -28,6 +29,8 @@ const Navbar = () => {
               <div className="relative group">
                 <input
                   type="text"
+                  onFocus={() => setShowSearch(true)}
+                  onBlur={() => setShowSearch(false)}
                   placeholder="Search products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -36,6 +39,11 @@ const Navbar = () => {
                            transition-all duration-300 group-hover:border-cyan-500/30"
                 />
                 <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-cyan-400 transition-colors duration-300" />
+                {showSearch && (
+                  <div className="absolute top-[50px] w-full flex justify-center">
+                    <SearchComp content={searchQuery} />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -48,7 +56,7 @@ const Navbar = () => {
                     <button className="p-2 hover:bg-white/5 rounded-lg transition-colors duration-300">
                       <FaBell className="w-5 h-5 text-gray-400 hover:text-cyan-400" />
                     </button>
-                    <Link to="/me">
+                    <Link to="/me#bookmark">
                       <button className="p-2 hover:bg-white/5 rounded-lg transition-colors duration-300">
                         <FaRegBookmark className="w-5 h-5 text-gray-400 hover:text-cyan-400" />
                       </button>
@@ -96,6 +104,8 @@ const Navbar = () => {
           <div className="relative group">
             <input
               type="text"
+              onFocus={() => setShowSearch(true)}
+              onBlur={() => setShowSearch(false)}
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -104,6 +114,11 @@ const Navbar = () => {
                        transition-all duration-300 group-hover:border-cyan-500/30"
             />
             <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-cyan-400 transition-colors duration-300" />
+            {showSearch && (
+              <div className="absolute top-[50px] w-full flex justify-center">
+                <SearchComp content={searchQuery} />
+              </div>
+            )}
           </div>
         </div>
       </div>

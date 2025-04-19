@@ -1,0 +1,75 @@
+import { useState } from "react";
+import {
+  CloseIcon,
+  HamburgerIcon,
+  NotificationIcon,
+  SearchIcon,
+  UserIcon,
+} from "../icons/Icons";
+
+const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  return (
+    <div className="flex justify-between mb-2 px-4 py-3">
+      {/* Left Component  */}
+      <div className="w-fit px-1 lg:w-[500px] lg:h-[45px] lg:flex lg:px-2 lg:py-2 lg:justify-around lg:items-center">
+        <div className="lg:flex lg:justify-center items-center font-bold text-2xl lg:text-3xl text-[#313131] h-[45px] px-2 py-2">
+          Auctionista
+        </div>
+        <div className="hidden lg:flex justify-center lg:items-center px-2 text-gray-700 h-[45px] mt-[3px] text-[18px]  cursor-pointer hover:text-purple-500 hover:transition hover:duration-200 font-medium">
+          How it works
+        </div>
+        <div className=" hidden lg:flex justify-center items-center px-2  h-[45px] text-gray-700 mt-[3px] text-[18px] hover:text-purple-500 hover:transition hover:duration-200 font-medium cursor-pointer">
+          Sell
+        </div>
+      </div>
+
+      {/* Mobile Right Component */}
+      <div className="flex lg:hidden">
+        <div
+          className="flex justify-center items-center px-2 cursor-pointer"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          {isMenuOpen ? <CloseIcon /> : <HamburgerIcon />}
+        </div>
+        {isMenuOpen && (
+          <div className="flex z-10 bg-purple-200 lg:hidden fixed h-[300px] shadow-lg shadow-purple-400 rounded-b-[36px] top-[70px] left-0 w-full ">
+            <div className="w-full">
+              <div className="flex justify-start items-center px-5 py-3 text-[18px] font-medium hover:text-purple-500 hover:cursor-pointer">
+                <p className="text-center">How it Works</p>
+              </div>
+              <div className="flex justify-start items-center px-5 py-3 text-[18px] font-medium hover:text-purple-500 hover:cursor-pointer">
+                <p className="text-center">Sell</p>
+              </div>
+              <div className="w-full flex px-4 py-4 justify-center">
+                <div className="flex justify-center items-center px-4 py-4 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
+                  <SearchIcon />
+                </div>
+                <div className="flex justify-center items-center px-4 py-4 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
+                  <NotificationIcon />
+                </div>
+                <div className="flex justify-center items-center px-4 py-4 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
+                  <UserIcon />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      {/* Web Right Component */}
+      <div className="hidden lg:flex lg:w-[200px] lg:h-[45px] lg:justify-around lg:items-center lg:px-2 lg:py-2 lg:mr-[10px]">
+        <div className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
+          <SearchIcon />
+        </div>
+        <div className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
+          <NotificationIcon />
+        </div>
+        <div className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
+          <UserIcon />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Navbar;

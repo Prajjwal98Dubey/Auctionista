@@ -9,10 +9,11 @@ const productSlice = createSlice({
   initialState,
   reducers: {
     getProductList(state, action) {
-      if (!state.items[action.payload.category]) {
-        state.items[action.payload.category] = [...action.payload.items];
+      if (!state.items[action.payload.category.toLowerCase()]) {
+        state.items[action.payload.category.toLowerCase()] = [
+          ...action.payload.items,
+        ];
       }
-      // console.log("after inside the reducer", state.items);
     },
   },
 });

@@ -6,6 +6,10 @@ import {
   SmallWatchListIcon,
   WatchListIcon,
 } from "../icons/Icons";
+import {
+  addToWatchList,
+  removeFromWatchList,
+} from "../helpers/localStorageFunctions";
 
 const ProductDisplay = ({ items }) => {
   const [showWatchListBtn, setShowWatchListBtn] = useState(
@@ -22,6 +26,7 @@ const ProductDisplay = ({ items }) => {
     }
   }, [items]);
 
+  /*
   const addToWatchList = (id) => {
     if (localStorage.getItem("auction-watchlist")) {
       localStorage.setItem(
@@ -46,6 +51,7 @@ const ProductDisplay = ({ items }) => {
     );
     setWatchList([...updatedWatchList]);
   };
+  */
 
   return (
     <>
@@ -87,7 +93,7 @@ const ProductDisplay = ({ items }) => {
                 })
               }
               key={item.product_id}
-              className="w-[330px] h-[420px] hover:shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-gray-300 px-2 py-2 m-2 bg-white rounded-[16px] cursor-pointer"
+              className="w-[330px] h-[420px] hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-4 hover:shadow-gray-300 px-2 py-2 m-2 bg-white rounded-[16px] cursor-pointer"
             >
               <div className="flex justify-center relative">
                 <img
@@ -101,7 +107,9 @@ const ProductDisplay = ({ items }) => {
                     {watchList.length > 0 &&
                     watchList.some((prod) => prod === item.product_id) ? (
                       <button
-                        onClick={() => removeFromWatchList(item.product_id)}
+                        onClick={() =>
+                          setWatchList(removeFromWatchList(item.product_id))
+                        }
                         className="w-[200px] h-[42px] rounded-[22px] text-white bg-red-500  border border-gray-400 z-10 hover:transition hover:duration-200 hover:scale-x-105 flex justify-center items-center text-[13px] font-medium"
                       >
                         <RemoveIcon />
@@ -111,7 +119,9 @@ const ProductDisplay = ({ items }) => {
                       </button>
                     ) : (
                       <button
-                        onClick={() => addToWatchList(item.product_id)}
+                        onClick={() =>
+                          setWatchList(addToWatchList(item.product_id))
+                        }
                         className="w-[200px] h-[42px] rounded-[22px] text-black bg-white border border-gray-400 z-10 hover:transition hover:duration-200 hover:scale-x-105 flex justify-center items-center"
                       >
                         <WatchListIcon />

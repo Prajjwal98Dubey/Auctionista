@@ -13,6 +13,9 @@ import ActiveAuction from "../components/ActiveAuction";
 import WonAuction from "../components/WonAuction";
 import WatchList from "../components/WatchList";
 import Reviews from "../components/Reviews";
+import { LOGOUT_USER_API } from "../helpers/backendApi";
+import { allLocalStorageKeys } from "../helpers/localStorageFunctions";
+import { useNavigate } from "react-router-dom";
 
 const DEFAULT_USER_IMG =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR1mUIvhtD-xNTuX2-AQczIi6RtMlIDbwUPNOVhmg-ZCZ6y2mwi59Xs4qS_J5JFlrM-J0&usqp=CAU";
@@ -41,6 +44,20 @@ const tags = [
 ];
 const Profile = () => {
   const [selectedType, setSelectedType] = useState(0);
+  const navigate = useNavigate();
+
+  const handleUserLogOut = async () => {
+    await fetch(LOGOUT_USER_API, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    let allKeys = allLocalStorageKeys();
+    for (let key of allKeys) {
+      localStorage.removeItem(key);
+    }
+    navigate("/");
+  };
+
   return (
     <>
       <Navbar />
@@ -51,7 +68,9 @@ const Profile = () => {
               <div className="p-[4px] w-fit h-fit border border-gray-400 rounded-full m-2">
                 <img
                   src={
-                    localStorage.getItem("auction-user-details")
+                    localStorage.getItem("auction-user-details") &&
+                    JSON.parse(localStorage.getItem("auction-user-details"))
+                      .userPhoto.length > 0
                       ? JSON.parse(localStorage.getItem("auction-user-details"))
                           .userPhoto
                       : DEFAULT_USER_IMG
@@ -66,6 +85,14 @@ const Profile = () => {
                     JSON.parse(localStorage.getItem("auction-user-details"))
                       .userName
                   }
+                  <div className="flex justify-center px-2 text-[12px] text-white">
+                    <button
+                      onClick={handleUserLogOut}
+                      className="px-3 py-1 bg-red-500 rounded-[22px] hover:bg-red-600"
+                    >
+                      Logout
+                    </button>
+                  </div>
                 </div>
                 <div className="flex justify-start py-1 px-2 items-center">
                   <div>

@@ -6,6 +6,7 @@ import {
   SearchIcon,
   UserIcon,
 } from "../icons/Icons";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,9 +14,11 @@ const Navbar = () => {
     <div className="flex justify-between mb-2 px-4 py-3">
       {/* Left Component  */}
       <div className="w-fit px-1 lg:w-[500px] lg:h-[45px] lg:flex lg:px-2 lg:py-2 lg:justify-around lg:items-center">
-        <div className="lg:flex lg:justify-center items-center font-bold text-2xl lg:text-3xl text-[#313131] h-[45px] px-2 py-2">
-          Auctionista
-        </div>
+        <Link to="/">
+          <div className="lg:flex lg:justify-center items-center font-bold text-2xl lg:text-3xl text-[#313131] h-[45px] px-2 py-2">
+            Auctionista
+          </div>
+        </Link>
         <div className="hidden lg:flex justify-center lg:items-center px-2 text-gray-700 h-[45px] mt-[3px] text-[18px]  cursor-pointer hover:text-purple-500 hover:transition hover:duration-200 font-medium">
           How it works
         </div>
@@ -48,22 +51,25 @@ const Navbar = () => {
                 <div className="flex justify-center items-center px-4 py-4 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
                   <NotificationIcon />
                 </div>
-                <div className="flex justify-center items-center px-4 py-4 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
-                  {localStorage.getItem("auction-user-details") &&
-                  JSON.parse(localStorage.getItem("auction-user-details"))
-                    .userPhoto.length > 0 ? (
-                    <img
-                      src={
-                        JSON.parse(localStorage.getItem("auction-user-details"))
-                          .userPhoto
-                      }
-                      alt="loading"
-                      className="w-[32px] h-[32px] rounded-full"
-                    />
-                  ) : (
-                    <UserIcon />
-                  )}
-                </div>
+                <Link to="/u">
+                  <div className="flex justify-center items-center px-4 py-4 hover:bg-red-500 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
+                    {localStorage.getItem("auction-user-details") &&
+                    JSON.parse(localStorage.getItem("auction-user-details"))
+                      .userPhoto.length > 0 ? (
+                      <img
+                        src={
+                          JSON.parse(
+                            localStorage.getItem("auction-user-details")
+                          ).userPhoto
+                        }
+                        alt="loading"
+                        className="w-[32px] h-[32px] rounded-full"
+                      />
+                    ) : (
+                      <UserIcon />
+                    )}
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -77,20 +83,33 @@ const Navbar = () => {
         <div className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
           <NotificationIcon />
         </div>
-        <div className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
-          {localStorage.getItem("auction-user-details") &&
-          JSON.parse(localStorage.getItem("auction-user-details")).userPhoto
-            .length > 0 ? (
-            <img
-              src={
-                JSON.parse(localStorage.getItem("auction-user-details"))
-                  .userPhoto
-              }
-              alt="loading"
-              className="w-[36px] h-[36px] rounded-full object-cover"
-            />
+        <div className="lg:flex lg:justify-center lg:items-center rounded-full text-gray-700 ">
+          {localStorage.getItem("auction-user-details") ? (
+            JSON.parse(localStorage.getItem("auction-user-details")).userPhoto
+              .length > 0 ? (
+              <Link to="/u">
+                <img
+                  src={
+                    JSON.parse(localStorage.getItem("auction-user-details"))
+                      .userPhoto
+                  }
+                  alt="loading"
+                  className="w-[40px] h-[40px] rounded-full object-cover hover:transition hover:duration-200 hover:bg-purple-100 hover:cursor-pointer hover:border hover:border-purple-800"
+                />
+              </Link>
+            ) : (
+              <Link to="/u">
+                <UserIcon />
+              </Link>
+            )
           ) : (
-            <UserIcon />
+            <div className="mx-1">
+              <Link to="/auth">
+                <button className="py-2 px-5 rounded-md bg-purple-800/75 hover:bg-purple-800/95 text-white font-semibold">
+                  Login
+                </button>
+              </Link>
+            </div>
           )}
         </div>
       </div>

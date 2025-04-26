@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SINGLE_PRODUCTS_API } from "../helpers/backendApi";
 import { HeartSolidIcon, WatchLogoIcon } from "../icons/Icons";
+import { removeFromWatchList } from "../helpers/localStorageFunctions";
 
 const WatchList = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -24,6 +25,14 @@ const WatchList = () => {
       getWatchListProducts();
     }
   }, []);
+
+  const handleRemoveFromWatchList = (id) => {
+    setWatchListDetails([
+      ...watchListDetails.filter((item) => item.product_id !== id),
+    ]);
+    removeFromWatchList(id);
+  };
+
   return (
     <>
       {localStorage.getItem("auction-watchlist") ? (
@@ -43,7 +52,11 @@ const WatchList = () => {
                       alt="loading..."
                       className="w-full h-[250px] "
                     />
-                    <div className="absolute top-1 right-2 text-red-500 w-fit h-fit py-2 px-2 bg-gray-400/30 rounded-full hover:bg-gray-400/40 cursor-pointer">
+                    <div
+                      onClick={() => handleRemoveFromWatchList(item.product_id)}
+                      className="absolute top-1
+                     right-2 text-red-500 w-fit h-fit py-2 px-2 bg-gray-400/30 rounded-full hover:bg-gray-400/40 cursor-pointer"
+                    >
                       <HeartSolidIcon />
                     </div>
                   </div>

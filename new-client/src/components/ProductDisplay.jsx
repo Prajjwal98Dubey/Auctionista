@@ -87,7 +87,7 @@ const ProductDisplay = ({ items }) => {
                 })
               }
               key={item.product_id}
-              className="w-[330px] h-[420px] hover:shadow-lg hover:transition hover:duration-300 hover:shadow-gray-300 px-2 py-2 m-2 bg-white rounded-[16px] cursor-pointer"
+              className="w-[330px] h-[420px] hover:shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-gray-300 px-2 py-2 m-2 bg-white rounded-[16px] cursor-pointer"
             >
               <div className="flex justify-center relative">
                 <img

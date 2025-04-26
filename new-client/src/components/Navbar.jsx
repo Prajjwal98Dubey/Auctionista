@@ -49,7 +49,20 @@ const Navbar = () => {
                   <NotificationIcon />
                 </div>
                 <div className="flex justify-center items-center px-4 py-4 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
-                  <UserIcon />
+                  {localStorage.getItem("auction-user-details") &&
+                  JSON.parse(localStorage.getItem("auction-user-details"))
+                    .userPhoto.length > 0 ? (
+                    <img
+                      src={
+                        JSON.parse(localStorage.getItem("auction-user-details"))
+                          .userPhoto
+                      }
+                      alt="loading"
+                      className="w-[32px] h-[32px] rounded-full"
+                    />
+                  ) : (
+                    <UserIcon />
+                  )}
                 </div>
               </div>
             </div>
@@ -65,7 +78,20 @@ const Navbar = () => {
           <NotificationIcon />
         </div>
         <div className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
-          <UserIcon />
+          {localStorage.getItem("auction-user-details") &&
+          JSON.parse(localStorage.getItem("auction-user-details")).userPhoto
+            .length > 0 ? (
+            <img
+              src={
+                JSON.parse(localStorage.getItem("auction-user-details"))
+                  .userPhoto
+              }
+              alt="loading"
+              className="w-[36px] h-[36px] rounded-full object-cover"
+            />
+          ) : (
+            <UserIcon />
+          )}
         </div>
       </div>
     </div>

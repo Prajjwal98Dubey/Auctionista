@@ -16,6 +16,7 @@ import Reviews from "../components/Reviews";
 import { LOGOUT_USER_API } from "../helpers/backendApi";
 import { allLocalStorageKeys } from "../helpers/localStorageFunctions";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const DEFAULT_USER_IMG =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR1mUIvhtD-xNTuX2-AQczIi6RtMlIDbwUPNOVhmg-ZCZ6y2mwi59Xs4qS_J5JFlrM-J0&usqp=CAU";
@@ -45,6 +46,7 @@ const tags = [
 const Profile = () => {
   const [selectedType, setSelectedType] = useState(0);
   const navigate = useNavigate();
+  const userInfo = useSelector((store) => store.userInfo);
 
   const handleUserLogOut = async () => {
     await fetch(LOGOUT_USER_API, {
@@ -61,6 +63,7 @@ const Profile = () => {
   return (
     <>
       <Navbar />
+      {console.log("user details", userInfo.userDetails)}
       <div className="hidden lg:flex font-kanit ">
         <div className="w-full min-h-screen px-3 py-2">
           <div className="w-full h-fit border border-gray-300 rounded-md flex justify-between">

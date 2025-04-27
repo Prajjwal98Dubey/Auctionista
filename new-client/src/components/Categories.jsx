@@ -46,6 +46,7 @@ const Categories = () => {
       getProductDetails();
     } else {
       setProdList([...productsList[selectedCategoryState.toLowerCase()]]);
+      setIsLoading(false);
     }
   }, [selectedCategoryState, dispatch, productsList]);
   return (
@@ -79,6 +80,7 @@ const Categories = () => {
           )}
         </div>
       </div>
+
       <div className="lg:hidden flex justify-center w-full">
         <div>
           <div className="flex justify-center items-center py-4">
@@ -94,10 +96,7 @@ const Categories = () => {
             <div className="fixed min-h-screen w-full bg-gray-700/80 top-0 left-0 z-10">
               <div className="py-12">
                 {categoryList.map((category, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-center items-center"
-                  >
+                  <div key={index} className="flex justify-center items-center">
                     <div
                       onClick={() => {
                         dispatch(

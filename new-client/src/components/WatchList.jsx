@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { SINGLE_PRODUCTS_API } from "../helpers/backendApi";
+import {
+  BATCH_WATCHLIST_PRODUCTS_API,
+  SINGLE_PRODUCTS_API,
+} from "../helpers/backendApi";
 import { HeartSolidIcon, WatchLogoIcon } from "../icons/Icons";
 import { removeFromWatchList } from "../helpers/localStorageFunctions";
 
@@ -8,17 +11,18 @@ const WatchList = () => {
   const [watchListDetails, setWatchListDetails] = useState([]);
   useEffect(() => {
     const getWatchListProducts = async () => {
-      let allReqs = JSON.parse(localStorage.getItem("auction-watchlist")).map(
-        (id) =>
-          fetch(SINGLE_PRODUCTS_API + `?prodId=${id}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }).then((res) => res.json())
-      );
-      let finalRes = await Promise.all(allReqs);
-      setWatchListDetails(finalRes);
+      let res = await fetch(BATCH_WATCHLIST_PRODUCTS_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          prodIds: JSON.parse(localStorage.getItem("auction-watchlist")),
+        }),
+      });
+      res = await res.json();
+      setWatchListDetails(res);
       setIsLoading(false);
     };
     if (localStorage.getItem("auction-watchlist")) {

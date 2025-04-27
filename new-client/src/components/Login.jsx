@@ -5,10 +5,12 @@ import {
   LockIcon,
   OpenEyeIcon,
   RightArrowAuthLogin,
-  UserIcon,
 } from "../icons/Icons";
 import AuthFooter from "./AuthFooter";
-import { LOGIN_USER_API } from "../helpers/backendApi";
+import {
+  GET_WATCHLIST_PRODUCTS_API,
+  LOGIN_USER_API,
+} from "../helpers/backendApi";
 import { useDispatch } from "react-redux";
 import { saveUserDetails } from "../redux/slices/userInfoSlice";
 import { useNavigate } from "react-router-dom";
@@ -42,6 +44,20 @@ const Login = () => {
       });
       return;
     } else {
+      let watchListItems = await fetch(GET_WATCHLIST_PRODUCTS_API, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      watchListItems = await watchListItems.json();
+      if (watchListItems["message"] === undefined) {
+        localStorage.setItem(
+          "auction-watchlist",
+          JSON.stringify(watchListItems.map((obj) => obj.product_id))
+        );
+      }
       dispatch(
         saveUserDetails({
           userName: res.user_name,

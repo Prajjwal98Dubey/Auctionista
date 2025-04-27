@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CloseIcon,
   HamburgerIcon,
@@ -10,8 +10,42 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      const navBarId = document.getElementById("auction-nav");
+      if (window.scrollY > 100) {
+        navBarId.style.position = "fixed";
+        navBarId.style.width = "80%";
+        navBarId.style.top = "0px";
+        navBarId.style.left = "140px";
+        navBarId.style.zIndex = "50";
+        navBarId.style.backgroundColor = "rgb(233,213,255)";
+        navBarId.style.borderStyle = "solid";
+        navBarId.style.borderWidth = "1px";
+        navBarId.style.borderColor = "#540854";
+
+        navBarId.style.borderRadius = "30px";
+      } else {
+        navBarId.style.position = "relative";
+        navBarId.style.width = "";
+        navBarId.style.top = "";
+        navBarId.style.left = "";
+        navBarId.style.zIndex = "";
+        navBarId.style.backgroundColor = "";
+        navBarId.style.borderRadius = "px";
+        navBarId.style.borderStyle = "";
+        navBarId.style.borderWidth = "";
+        navBarId.style.borderColor = "";
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <div className="flex justify-between mb-2 px-4 py-3">
+    <div id="auction-nav" className="flex justify-between mb-2 px-4 py-3">
       {/* Left Component  */}
       <div className="w-fit px-1 lg:w-[500px] lg:h-[45px] lg:flex lg:px-2 lg:py-2 lg:justify-around lg:items-center">
         <Link to="/">

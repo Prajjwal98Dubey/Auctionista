@@ -1,3 +1,7 @@
+import {
+  REMOVE_PRODUCTS_FROM_WATCHLIST_API,
+} from "./backendApi";
+
 export const addToWatchList = (id) => {
   if (localStorage.getItem("auction-watchlist")) {
     localStorage.setItem(
@@ -12,7 +16,8 @@ export const addToWatchList = (id) => {
   }
   return [...JSON.parse(localStorage.getItem("auction-watchlist"))];
 };
-export const removeFromWatchList = (id) => {
+export const removeFromWatchList = async (id) => {
+ 
   let updatedWatchList = JSON.parse(
     localStorage.getItem("auction-watchlist")
   ).filter((prodId) => prodId !== id);

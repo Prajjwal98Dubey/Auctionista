@@ -7,9 +7,11 @@ import {
   UserIcon,
 } from "../icons/Icons";
 import { Link } from "react-router-dom";
+import SearchComp from "./SearchComp";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
       const navBarId = document.getElementById("auction-nav");
@@ -111,9 +113,13 @@ const Navbar = () => {
       </div>
       {/* Web Right Component */}
       <div className="hidden lg:flex lg:w-[200px] lg:h-[45px] lg:justify-around lg:items-center lg:px-2 lg:py-2 lg:mr-[10px]">
-        <div className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
+        <div
+          onClick={() => setIsSearchOpen(true)}
+          className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200"
+        >
           <SearchIcon />
         </div>
+        {isSearchOpen && <SearchComp setIsSearchOpen={setIsSearchOpen} />}
         <div className="lg:flex lg:justify-center lg:items-center px-2 py-2 hover:bg-purple-100 hover:cursor-pointer rounded-full text-gray-700 hover:transition hover:duration-200">
           <NotificationIcon />
         </div>

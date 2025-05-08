@@ -102,15 +102,22 @@ const ProductDisplay = ({ items }) => {
                     className="w-full h-[280px] p-2 rounded-[16px] "
                   />
                   {showWatchListBtn[index] && (
-                    <div className="absolute bottom-4 flex justify-center transition duration-200">
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                      className="absolute bottom-4 flex justify-center transition duration-200 z-50"
+                    >
                       {watchList.length > 0 &&
                       watchList.some((prod) => prod === item.product_id) ? (
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setWatchList(removeFromWatchList(item.product_id));
                             handleRemoveFromWatchList(item.product_id);
                           }}
-                          className="w-[200px] h-[42px] rounded-[22px] text-white bg-red-500  border border-gray-400 z-10 hover:transition hover:duration-200 hover:scale-x-105 flex justify-center items-center text-[13px] font-medium"
+                          className="w-[200px] h-[42px] rounded-[22px] text-white bg-red-500  border border-gray-400  hover:transition hover:duration-200 hover:scale-x-105 flex justify-center items-center text-[13px] font-medium"
                         >
                           <RemoveIcon />
                           <p className="text-center px-2 py-1">
@@ -119,11 +126,12 @@ const ProductDisplay = ({ items }) => {
                         </button>
                       ) : (
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setWatchList(addToWatchList(item.product_id));
                             handleAddToWatchList(item.product_id);
                           }}
-                          className="w-[200px] h-[42px] rounded-[22px] text-black bg-white border border-gray-400 z-10 hover:transition hover:duration-200 hover:scale-x-105 flex justify-center items-center"
+                          className="w-[200px] h-[42px] rounded-[22px] text-black bg-white border border-gray-400 hover:transition hover:duration-200 hover:scale-x-105 flex justify-center items-center"
                         >
                           <WatchListIcon />
                           <p className="text-center px-2 py-1">WatchList</p>

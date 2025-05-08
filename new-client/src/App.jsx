@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
+import SingleProduct from "./pages/SingleProduct";
 
 const Home = lazy(() => import("./pages/Home"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -49,6 +50,14 @@ const appRouter = createBrowserRouter([
     element: (
       <Suspense fallback={<Loader />}>
         <Profile />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/product/:id",
+    element: (
+      <Suspense fallback={<Loader />}>
+        <SingleProduct />
       </Suspense>
     ),
   },

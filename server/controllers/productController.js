@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 import auctionPool from "../db/connectDB.js";
 import { categoryToDBCategory } from "../helpers/mapping.js";
 import { connectRedisServer } from "../redisClient.js";
+import { convertDateToUsageTime } from "../helpers/dateFormatter.js";
 
 export const addProduct = async (req, res) => {
   const user = req.user;
@@ -15,6 +16,7 @@ export const addProduct = async (req, res) => {
     bid_start_time,
     product_appeal,
     product_images,
+    bid_time,
   } = req.body;
   try {
     if (
@@ -28,7 +30,7 @@ export const addProduct = async (req, res) => {
       return res.json({ message: "insufficient data" }).status(400);
     const product_id = nanoid();
     await auctionPool.query(
-      "INSERT INTO PRODUCT VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      "INSERT INTO PRODUCT (product_id, product_user_id, product_set_price, product_original_price, product_title, product_desc, product_category, product_usage_time, bid_start_time, highest_bid, product_appeal, product_images,bid_time) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
       [
         product_id,
         user,
@@ -42,6 +44,7 @@ export const addProduct = async (req, res) => {
         0,
         product_appeal.trim(),
         product_images,
+        bid_time,
       ]
     );
     return res
@@ -64,22 +67,6 @@ export const addProduct = async (req, res) => {
   }
 };
 
-// export const getProductDetails = async (req, res) => {
-//   const product_id = req.query.product_id;
-//   try {
-//     const productDetails = await auctionPool.query(
-//       "SELECT * FROM PRODUCT WHERE PRODUCT_ID = $1",
-//       [product_id]
-//     );
-//     if (!productDetails.rowCount)
-//       return res.json({ message: "no product with this id." }).status(404);
-//     return res
-//       .json({ message: "success", ...productDetails.rows[0] })
-//       .status(201);
-//   } catch (error) {
-//     return res.json({ message: "error" }).status(400);
-//   }
-// };
 
 export const editProduct = async (req, res) => {
   const { new_value, attr, product_id } = req.body;
@@ -783,17 +770,23 @@ export const addGeneralElectronics = async (req, res) => {
 
 export const displayProducts = async (req, res) => {
   let { category } = req.query;
+  category.toLowerCase();
   if (category === "electronics") category = "general-electronics";
   try {
     let latestProducts =
       category === "all" || category === undefined
         ? await auctionPool.query(
-            "SELECT PROD.PRODUCT_ID, PROD.PRODUCT_SET_PRICE,PROD.PRODUCT_TITLE,PROD.PRODUCT_USAGE_TIME,PROD.BID_START_TIME,PROD.PRODUCT_IMAGES,PROD.PRODUCT_USER_ID, PROD.PRODUCT_CATEGORY, US.USER_NAME,US.USER_PHOTO FROM PRODUCT PROD INNER JOIN USERS US ON PROD.PRODUCT_USER_ID = US.USER_ID"
+            "SELECT PROD.PRODUCT_ID, PROD.PRODUCT_SET_PRICE,PROD.PRODUCT_TITLE,PROD.PRODUCT_USAGE_TIME,PROD.BID_START_TIME,PROD.PRODUCT_IMAGES,PROD.PRODUCT_USER_ID, PROD.PRODUCT_CATEGORY, PROD.CREATED_AT,US.USER_NAME,US.USER_PHOTO FROM PRODUCT PROD INNER JOIN USERS US ON PROD.PRODUCT_USER_ID = US.USER_ID"
           )
         : await auctionPool.query(
-            "SELECT PROD.PRODUCT_ID, PROD.PRODUCT_SET_PRICE,PROD.PRODUCT_TITLE,PROD.PRODUCT_USAGE_TIME,PROD.BID_START_TIME,PROD.PRODUCT_IMAGES,PROD.PRODUCT_USER_ID, PROD.PRODUCT_CATEGORY, US.USER_NAME,US.USER_PHOTO FROM PRODUCT PROD INNER JOIN USERS US ON PROD.PRODUCT_USER_ID = US.USER_ID WHERE PROD.PRODUCT_CATEGORY = $1",
+            "SELECT PROD.PRODUCT_ID, PROD.PRODUCT_SET_PRICE,PROD.PRODUCT_TITLE,PROD.PRODUCT_USAGE_TIME,PROD.BID_START_TIME,PROD.PRODUCT_IMAGES,PROD.PRODUCT_USER_ID, PROD.PRODUCT_CATEGORY, PROD.CREATED_AT, US.USER_NAME,US.USER_PHOTO FROM PRODUCT PROD INNER JOIN USERS US ON PROD.PRODUCT_USER_ID = US.USER_ID WHERE PROD.PRODUCT_CATEGORY = $1",
             [category]
           );
+
+    latestProducts.rows.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
     return res.json({ products: latestProducts.rows }).status(200);
   } catch (error) {
     console.log(error);
@@ -825,14 +818,14 @@ export const getProductDetails = async (req, res) => {
       original_price: results.rows[0].original_price,
       title: results.rows[0].title,
       desc: results.rows[0].description,
-      product_appeal: results.rows[0].product_appeal,
-      usage_time: results.rows[0].usage_time,
+      // product_appeal: results.rows[0].product_appeal,
+      usage_time: `${convertDateToUsageTime(results.rows[0].usage_time)}`,
       bid_time: results.rows[0].bid_time,
       user_name: userDetails.rows[0].user_name,
       user_photo: userDetails.rows[0].user_photo,
       highest_bid: results.rows[0].highest_bid,
       product_id: results.rows[0].product_id,
-      product_category: results.rows[0].product_category,
+      product_category: category,
     };
     switch (category) {
       case "mobile":
@@ -840,12 +833,14 @@ export const getProductDetails = async (req, res) => {
           .json({
             details: {
               ...commonAttr,
-              ram_storage: results.rows[0].ram_storage,
-              rom_storage: results.rows[0].rom_storage,
+              ram_storage: `${results.rows[0].ram_storage} GB`,
+              rom_storage: `${results.rows[0].rom_storage} GB`,
               operating_system: results.rows[0].operating_system,
-              rear_camera: results.rows[0].rear_camera,
-              front_camera: results.rows[0].front_camera,
-              screen_size: results.rows[0].screen_size,
+              rear_camera: `${results.rows[0].rear_camera} MP`,
+              front_camera: `${results.rows[0].front_camera} MP`,
+              screen_size: `${results.rows[0].screen_size} inch (${(
+                results.rows[0].screen_size * 2.54
+              ).toFixed(2)}) cm`,
               cpu: results.rows[0].cpu,
             },
           })
@@ -855,12 +850,14 @@ export const getProductDetails = async (req, res) => {
           .json({
             details: {
               ...commonAttr,
-              ram_storage: results.rows[0].ram_storage,
-              rom_storage: results.rows[0].rom_storage,
+              ram_storage: `${results.rows[0].ram_storage} GB`,
+              rom_storage: `${results.rows[0].rom_storage} GB`,
               operating_system: results.rows[0].operating_system,
-              rear_camera: results.rows[0].rear_camera,
-              front_camera: results.rows[0].front_camera,
-              screen_size: results.rows[0].screen_size,
+              rear_camera: `${results.rows[0].rear_camera} MP`,
+              front_camera: `${results.rows[0].front_camera} MP`,
+              screen_size: `${results.rows[0].screen_size} inch (${(
+                results.rows[0].screen_size * 2.54
+              ).toFixed(2)}) cm`,
               cpu: results.rows[0].cpu,
             },
           })
@@ -870,7 +867,9 @@ export const getProductDetails = async (req, res) => {
           .json({
             details: {
               ...commonAttr,
-              screen_size: results.rows[0].screen_size,
+              screen_size: `${results.rows[0].screen_size} inch (${(
+                results.rows[0].screen_size * 2.54
+              ).toFixed(2)}) cm`,
             },
           })
           .status(200);
@@ -887,7 +886,7 @@ export const getProductDetails = async (req, res) => {
           .json({
             details: {
               ...commonAttr,
-              diameter: results.rows[0].diameter,
+              diameter: `${results.rows[0].diameter} mm`,
               is_digital: results.rows[0].is_digital,
               is_calling_available: results.rows[0].is_calling_available,
               have_fitness_tracker: results.rows[0].have_fitness_tracker,
@@ -926,6 +925,25 @@ export const getProductDetails = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const singleProductDetails = async (req, res) => {
+  const { prodId } = req.query;
+  try {
+    const prodDetails = await auctionPool.query(
+      "SELECT * FROM PRODUCT WHERE PRODUCT_ID = $1",
+      [prodId]
+    );
+    const userDetails = await auctionPool.query(
+      "SELECT USER_NAME,USER_PHOTO,USER_CITY,USER_COUNTRY FROM USERS WHERE USER_ID = $1",
+      [prodDetails.rows[0].product_user_id]
+    );
+    return res
+      .json({ ...prodDetails.rows[0], ...userDetails.rows[0] })
+      .status(200);
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -973,21 +991,40 @@ export const updateHighestBidOfSpecificProduct = async (req, res) => {
         message: "something went wrong while fetching highest bid.",
       });
     else {
-      /*
-      console.log(prodId);
-      console.log(category);
-      console.log(parseInt(isKeyPresent));
-      console.log(
-        `UPDATE ${categoryToDBCategory[category]} SET HIGHEST_BID = $1 WHERE PRODUCT_ID = $2`
-      );
-      */
-
       await auctionPool.query(
         `UPDATE ${categoryToDBCategory[category]} SET HIGHEST_BID = $1 WHERE PRODUCT_ID = $2`,
         [parseInt(isKeyPresent), prodId]
       );
       return res.json({ message: "highest bid update success." }).status(201);
     }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const fetchAllWatchListProductDetails = async (req, res) => {
+  const { prodIds } = req.body;
+  try {
+    let allProdDetails = prodIds.map((id) =>
+      auctionPool
+        .query("SELECT * FROM PRODUCT WHERE PRODUCT_ID = $1", [id])
+        .then((res) => res.rows[0])
+    );
+    let prodDetails = await Promise.all(allProdDetails);
+    return res.json(prodDetails).status(200);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getRelatedProducts = async (req, res) => {
+  const { category, prodId } = req.query;
+  try {
+    let prodDetails = await auctionPool.query(
+      "SELECT PRODUCT_ID,PRODUCT_IMAGES,PRODUCT_TITLE,PRODUCT_SET_PRICE FROM PRODUCT WHERE PRODUCT_CATEGORY=$1 AND PRODUCT_ID <> $2",
+      [category.toLowerCase(), prodId]
+    );
+    return res.json(prodDetails.rows).status(200);
   } catch (error) {
     console.log(error);
   }

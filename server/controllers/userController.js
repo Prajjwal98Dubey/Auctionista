@@ -48,15 +48,15 @@ export const registerUser = async (req, res) => {
       user_email.toLowerCase().trim(),
       encrypted_password,
       refresh_token,
-      user_first_name.toLowerCase().trim(),
-      user_last_name.toLowerCase().trim(),
-      user_contact_no,
-      user_address_line.toLowerCase().trim(),
-      user_city.toLowerCase().trim(),
-      user_country.toLowerCase().trim(),
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
       "",
       false,
-      user_photo,
+      "",
       "",
     ]
   );
@@ -68,7 +68,6 @@ export const registerUser = async (req, res) => {
   });
   return res
     .json({
-      message: "user registered!!!",
       user_email: user_email.toLowerCase().trim(),
       user_name: user_name.trim(),
       user_photo,
@@ -146,8 +145,8 @@ export const thirdParyLogin = async (req, res) => {
           "",
           "",
           "",
-          "",
           true,
+          "",
           user_photo,
         ]
       );
@@ -170,7 +169,8 @@ export const thirdParyLogin = async (req, res) => {
       })
       .status(201);
   } catch (error) {
-    return res.json({ message: "error" });
+    console.log(error);
+    return res.json({ message: "error in the third party api" });
   }
 };
 
@@ -214,28 +214,6 @@ export const getUserDetails = async (req, res) => {
     return res.json({ message: "error" }).status(400);
   }
 };
-
-/*
-
-export const editUser = async (req, res) => {
-  const user = req.user;
-  const { attr, new_value } = req.body;
-  if (!attr || !new_value)
-    return res.json({ message: "insufficient data to update" }).status(400);
-  try {
-    let updatedUser = await auctionPool.query(
-      `UPDATE USERS SET ${attr} = $1 WHERE USER_ID = $2 `,
-      [new_value.trim(), user]
-    );
-    if (!updatedUser.rowCount)
-      return res.json({ message: "no user with this id" }).status(404);
-    return res.json({ message: "updated success" }).status(200);
-  } catch (error) {
-    return res.json({ message: "error" }).status(400);
-  }
-};
-
-*/
 
 export const editUser = async (req, res) => {
   const user = req.user;

@@ -13,8 +13,11 @@ import {
   deleteProduct,
   displayProducts,
   editProduct,
+  fetchAllWatchListProductDetails,
   getMyProducts,
   getProductDetails,
+  getRelatedProducts,
+  singleProductDetails,
   updateHighestBidOfProduct,
   updateHighestBidOfSpecificProduct,
 } from "../controllers/productController.js";
@@ -43,4 +46,10 @@ productRouter
   .route("/update_specific_product_bid")
   .get(updateHighestBidOfSpecificProduct);
 
+productRouter.route("/single_product").get(singleProductDetails);
+productRouter
+  .route("/batch_watchlist_id")
+  .post(authMiddleWare, fetchAllWatchListProductDetails);
+
+productRouter.route("/related_products").get(getRelatedProducts);
 export default productRouter;

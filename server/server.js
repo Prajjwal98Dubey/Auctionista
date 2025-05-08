@@ -2,12 +2,15 @@ import express from "express";
 import cors from "cors";
 import userRouter from "./routes/userRoutes.js";
 import productRouter from "./routes/productRoutes.js";
+import { connectRedisServer } from "./redisClient.js";
+import searchRouter from "./routes/searcRoutes.js";
+import watchListRouter from "./routes/watchListRouters.js";
 const app = express();
 
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     // origin: "*",
     credentials: true,
   })
@@ -19,6 +22,13 @@ app.use("/api/v1/auth", userRouter);
 /* PRODUCT */
 app.use("/api/v1/product", productRouter);
 
-app.listen(process.env.PORT || 5001, () =>
-  console.log(`app listening at ${process.env.PORT || 5001}`)
-);
+/* SEARCH */
+app.use("/api/v1/search", searchRouter);
+
+/* WATCHLIST */
+app.use("/api/v1/watchlist", watchListRouter);
+
+app.listen(process.env.PORT || 5001, async () => {
+  console.log(`app listening at ${process.env.PORT || 5001}`);
+  await connectRedisServer();
+});

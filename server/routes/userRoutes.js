@@ -18,8 +18,8 @@ const userRouter = express.Router();
 
 userRouter.route("/register").post(registerUser);
 userRouter.route("/login").post(loginUser);
-userRouter.route("/third_partya_auth").post(thirdParyLogin);
-userRouter.route("/logout").get(authMiddleWare, logOutUser);
+userRouter.route("/third_party_auth").post(thirdParyLogin);
+userRouter.route("/logout").delete(authMiddleWare, logOutUser);
 userRouter.route("/my_details").get(authMiddleWare, getLoggedInUserDetails);
 userRouter.route("/user_details").get(getUserDetails);
 userRouter.route("/edit_user").put(authMiddleWare, editUser);

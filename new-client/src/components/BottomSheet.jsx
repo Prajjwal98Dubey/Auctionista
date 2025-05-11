@@ -9,6 +9,8 @@ import { convertDateToUsageTime } from "../helpers/dateFormatter";
 import ProductFeatureTable from "./ProductFeatureTable";
 import { useLocation, useNavigate } from "react-router-dom";
 import ReviseBid from "./ReviseBid";
+import { useDispatch, useSelector } from "react-redux";
+import { addToBidCollection } from "../redux/slices/bidStatusSlice";
 const DEFAULT_USER_IMG =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR1mUIvhtD-xNTuX2-AQczIi6RtMlIDbwUPNOVhmg-ZCZ6y2mwi59Xs4qS_J5JFlrM-J0&usqp=CAU";
 
@@ -22,8 +24,11 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
   const [prevBid, setPrevBid] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+  const bidSelector = useSelector((state) => state.bidStatus.appliedBids);
+  const dispatch = useDispatch();
   const handlePlaceBid = async () => {
-    if (currentPrice == 0) return alert("Enter some price !!!");
+    if (currentPrice == 0 || currentPrice == null)
+      return alert("Enter some price !!!");
     if (
       parseInt(currentPrice) <= parseInt(prodDetails.product_set_price) ||
       parseInt(currentPrice) >= parseInt(prodDetails.product_original_price) ||
@@ -38,6 +43,12 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
       credentials: "include",
       body: JSON.stringify({ prodId, bidPrice: parseInt(currentPrice) }),
     });
+    dispatch(
+      addToBidCollection({
+        productId: prodId,
+        prevPrice: parseInt(currentPrice),
+      })
+    );
   };
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -267,10 +278,17 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
                   </div>
                 </div>
                 <button
-                  className="w-full h-[45px] bg-purple-700 font-semibold text-[16px] rounded-md cursor-pointer hover:bg-purple-600"
+                  disabled={bidSelector.some((obj) => obj.productId == prodId)}
+                  className={`w-full h-[45px] bg-purple-700 font-semibold text-[16px] rounded-md ${
+                    bidSelector.some((obj) => obj.productId == prodId)
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-purple-700 hover:bg-purple-600  cursor-pointer "
+                  }`}
                   onClick={handlePlaceBid}
                 >
-                  Place Bid
+                  {bidSelector.some((obj) => obj.productId == prodId)
+                    ? "Bid Applied"
+                    : "Place Bid"}
                 </button>
               </div>
               <div className="px-3">

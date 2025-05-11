@@ -4,6 +4,12 @@ import {
   REMOVE_MY_BID,
   REVISE_MY_BID,
 } from "../helpers/backendApi";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToBidCollection,
+  removeFromBidCollection,
+  updateBidOfProduct,
+} from "../redux/slices/bidStatusSlice";
 
 const ReviseBid = ({
   prevBid,
@@ -15,7 +21,9 @@ const ReviseBid = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isBidPresent, setIsBidPresent] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [updatedBid, setUpdatedBid] = useState();
+  const [updatedBid, setUpdatedBid] = useState(0);
+  const bidSelector = useSelector((state) => state.bidStatus.appliedBids);
+  const dispatch = useDispatch();
   useEffect(() => {
     const getMyPreviousBid = async () => {
       let res = await fetch(GET_MY_PREVIOUS_BID + `?prodId=${prodId}`, {
@@ -26,14 +34,25 @@ const ReviseBid = ({
       if (res.isPrevious) {
         setIsBidPresent(true);
         setPrevBid(res.price);
+        dispatch(
+          addToBidCollection({ productId: prodId, prevPrice: res.price })
+        );
       } else setIsBidPresent(false);
       setIsLoading(false);
     };
-
-    getMyPreviousBid();
-  }, [prodId, setPrevBid]);
+    let checkForBidStatus = bidSelector.filter(
+      (obj) => obj.productId == prodId
+    );
+    if (checkForBidStatus.length > 0) {
+      setIsBidPresent(true);
+      setIsLoading(false);
+      setPrevBid(checkForBidStatus[0].prevPrice);
+    } else {
+      getMyPreviousBid();
+    }
+  }, [prodId, setPrevBid, dispatch, bidSelector]);
   const handleUpdateBid = async () => {
-    if (parseInt(updatedBid) == 0 || updatedBid == null)
+    if (updatedBid == 0 || updatedBid == null)
       return alert("Enter some price !!!");
     if (
       parseInt(updatedBid) <= parseInt(prodSetPrice) ||
@@ -53,7 +72,8 @@ const ReviseBid = ({
       credentials: "include",
     });
     setIsModalOpen(false);
-    setUpdatedBid();
+    dispatch(updateBidOfProduct({ productId: prodId, newPrice: updatedBid }));
+    setUpdatedBid(0);
   };
   const handleRemoveMyBid = async () => {
     await fetch(REMOVE_MY_BID + `?prodId=${prodId}`, {
@@ -61,6 +81,7 @@ const ReviseBid = ({
       credentials: "include",
     });
     setIsModalOpen(false);
+    dispatch(removeFromBidCollection({ productId: prodId }));
   };
   if (!isBidPresent) return null;
   return (
@@ -101,6 +122,7 @@ const ReviseBid = ({
                   </div>
                   <input
                     autoFocus
+                    type="number"
                     className=" w-[300px] h-[40px] rounded-md bg-[#313131] text-white border border-gray-400 font-semibold px-2"
                     value={updatedBid}
                     onChange={(e) => setUpdatedBid(e.target.value)}

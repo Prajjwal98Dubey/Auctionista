@@ -5,6 +5,7 @@ import productRouter from "./routes/productRoutes.js";
 import { connectRedisServer } from "./redisClient.js";
 import searchRouter from "./routes/searcRoutes.js";
 import watchListRouter from "./routes/watchListRouters.js";
+import bidRouter from "./routes/bidRoutes.js";
 const app = express();
 
 app.use(express.json());
@@ -27,6 +28,10 @@ app.use("/api/v1/search", searchRouter);
 
 /* WATCHLIST */
 app.use("/api/v1/watchlist", watchListRouter);
+
+/* BIDS */
+
+app.use("/api/v1/bid", bidRouter);
 
 app.listen(process.env.PORT || 5001, async () => {
   console.log(`app listening at ${process.env.PORT || 5001}`);

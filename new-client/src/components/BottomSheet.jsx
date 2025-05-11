@@ -7,6 +7,8 @@ import {
 } from "../helpers/backendApi";
 import { convertDateToUsageTime } from "../helpers/dateFormatter";
 import ProductFeatureTable from "./ProductFeatureTable";
+import { useLocation, useNavigate } from "react-router-dom";
+import ReviseBid from "./ReviseBid";
 const DEFAULT_USER_IMG =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR1mUIvhtD-xNTuX2-AQczIi6RtMlIDbwUPNOVhmg-ZCZ6y2mwi59Xs4qS_J5JFlrM-J0&usqp=CAU";
 
@@ -17,6 +19,9 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
   const [currentPrice, setCurrentPrice] = useState(0);
   const [bidStatus, setBidStatus] = useState({});
   const [statusLoading, setStatusLoading] = useState(true);
+  const [prevBid, setPrevBid] = useState(0);
+  const location = useLocation();
+  const navigate = useNavigate();
   const handlePlaceBid = async () => {
     if (currentPrice == 0) return alert("Enter some price !!!");
     if (
@@ -40,21 +45,37 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
       window.scrollTo(0, 0);
     };
     const getProductDetails = async () => {
-      let res = await fetch(SINGLE_PRODUCTS_API + `?prodId=${prodId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      let res = await fetch(
+        SINGLE_PRODUCTS_API +
+          `?prodId=${
+            location.pathname.split("/").some((chr) => chr === "product")
+              ? location.pathname.split("/").at(-1)
+              : prodId
+          }`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       res = await res.json();
       setProdDetails(res);
       setCurrentPrice(res.product_set_price);
       setIsLoading(false);
     };
     const getBidStatus = async () => {
-      let res = await fetch(GET_BID_STATUS + `${prodId}`, {
-        method: "GET",
-      });
+      let res = await fetch(
+        GET_BID_STATUS +
+          `${
+            location.pathname.split("/").some((chr) => chr === "product")
+              ? location.pathname.split("/").at(-1)
+              : prodId
+          }`,
+        {
+          method: "GET",
+        }
+      );
       res = await res.json();
       setBidStatus({ ...res });
       setStatusLoading(false);
@@ -64,12 +85,16 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
     return () => {
       window.onscroll = null;
     };
-  }, [prodId]);
+  }, [prodId, location]);
   return (
     <div className="z-10 fixed top-2 left-0 w-full min-h-screen bg-[#313131] text-white rounded-t-[36px] animate-slideUp font-kanit">
       <div
         className="absolute right-4 top-2 bg-gray-300 p-2 rounded-full hover:bg-gray-400 cursor-pointer transition duration-200"
-        onClick={() => setShowSingleProduct(false)}
+        onClick={() => {
+          if (location.pathname.split("/").some((chr) => chr === "product"))
+            navigate("/");
+          else setShowSingleProduct(false);
+        }}
       >
         <div className="text-black">
           <CrossIcon />
@@ -120,6 +145,15 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
                       ? bidStatus.maxPrice.toLocaleString()
                       : 0}
                   </div>
+                </div>
+                <div className="flex px-1 text-gray-400 text-[14px]">
+                  <ReviseBid
+                    prevBid={prevBid}
+                    setPrevBid={setPrevBid}
+                    prodId={prodDetails.product_id}
+                    prodSetPrice={prodDetails.product_set_price}
+                    prodOriginalPrice={prodDetails.product_original_price}
+                  />
                 </div>
               </div>
             )}
@@ -241,7 +275,13 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
               </div>
               <div className="px-3">
                 <ProductFeatureTable
-                  prodId={prodId}
+                  prodId={
+                    location.pathname
+                      .split("/")
+                      .some((chr) => chr === "product")
+                      ? location.pathname.split("/").at(-1)
+                      : prodId
+                  }
                   prodCategory={prodDetails.product_category}
                 />
               </div>

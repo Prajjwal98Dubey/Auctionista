@@ -11,6 +11,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ReviseBid from "./ReviseBid";
 import { useDispatch, useSelector } from "react-redux";
 import { addToBidCollection } from "../redux/slices/bidStatusSlice";
+import { addProduct } from "../redux/slices/productInfoSlice";
+
 const DEFAULT_USER_IMG =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR1mUIvhtD-xNTuX2-AQczIi6RtMlIDbwUPNOVhmg-ZCZ6y2mwi59Xs4qS_J5JFlrM-J0&usqp=CAU";
 
@@ -25,6 +27,9 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const bidSelector = useSelector((state) => state.bidStatus.appliedBids);
+  const productInfoSelector = useSelector(
+    (state) => state.productInfo.productInitialDetails
+  );
   const dispatch = useDispatch();
   const handlePlaceBid = async () => {
     if (currentPrice == 0 || currentPrice == null)
@@ -74,6 +79,9 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
       setProdDetails(res);
       setCurrentPrice(res.product_set_price);
       setIsLoading(false);
+      dispatch(
+        addProduct({ productId: res.product_id, productDetails: { ...res } })
+      );
     };
     const getBidStatus = async () => {
       let res = await fetch(
@@ -91,12 +99,31 @@ const BottomSheet = ({ setShowSingleProduct, prodId }) => {
       setBidStatus({ ...res });
       setStatusLoading(false);
     };
-    getProductDetails();
+    if (
+      productInfoSelector[
+        location.pathname.split("/").some((chr) => chr === "product")
+          ? location.pathname.split("/").at(-1)
+          : prodId
+      ]
+    ) {
+      let stateObj =
+        productInfoSelector[
+          location.pathname.split("/").some((chr) => chr === "product")
+            ? location.pathname.split("/").at(-1)
+            : prodId
+        ];
+      setProdDetails({ ...stateObj });
+      setCurrentPrice(stateObj.product_set_price);
+      setIsLoading(false);
+      console.log("product details without API call", stateObj);
+    } else {
+      getProductDetails();
+    }
     getBidStatus();
     return () => {
       window.onscroll = null;
     };
-  }, [prodId, location]);
+  }, [prodId, location, dispatch]);
   return (
     <div className="z-10 fixed top-2 left-0 w-full min-h-screen bg-[#313131] text-white rounded-t-[36px] animate-slideUp font-kanit">
       <div

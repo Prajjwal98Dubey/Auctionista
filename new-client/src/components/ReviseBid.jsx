@@ -10,6 +10,10 @@ import {
   removeFromBidCollection,
   updateBidOfProduct,
 } from "../redux/slices/bidStatusSlice";
+import {
+  removeProductBidInfo,
+  updateProductBidInfo,
+} from "../redux/slices/productInfoSlice";
 
 const ReviseBid = ({
   prevBid,
@@ -73,6 +77,13 @@ const ReviseBid = ({
     });
     setIsModalOpen(false);
     dispatch(updateBidOfProduct({ productId: prodId, newPrice: updatedBid }));
+    dispatch(
+      updateProductBidInfo({
+        productId: prodId,
+        userBidPrice: parseInt(updatedBid),
+        isBidPlaced: false,
+      })
+    );
     setUpdatedBid(0);
   };
   const handleRemoveMyBid = async () => {
@@ -82,6 +93,7 @@ const ReviseBid = ({
     });
     setIsModalOpen(false);
     dispatch(removeFromBidCollection({ productId: prodId }));
+    dispatch(removeProductBidInfo({ productId: prodId }));
   };
   if (!isBidPresent) return null;
   return (

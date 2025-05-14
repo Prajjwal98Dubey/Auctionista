@@ -6,6 +6,7 @@ import { DISPLAY_PRODUCTS_API } from "../helpers/backendApi";
 import { getProductList } from "../redux/slices/productSlice";
 import ProductDisplay from "./ProductDisplay";
 import CategoryProductsShimmer from "../ui-shimmers/CategoryProductsShimmer";
+import ProductFilter from "./ProductFilter";
 
 const categoryList = [
   "All",
@@ -21,10 +22,11 @@ const Categories = () => {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
-  const selectedCategory = useSelector((store) => store.category.selected); // redux
+  const selectedCategory = useSelector((store) => store.category.selected);
   const [selectedCategoryState, setSelectedCategoryState] = useState("all");
   const productsList = useSelector((store) => store.products.items);
   const [prodList, setProdList] = useState(productsList);
+  const [filterOption, setFilterOption] = useState({});
   useEffect(() => {
     const getProductDetails = async () => {
       setIsLoading(true);
@@ -39,35 +41,66 @@ const Categories = () => {
           items: res.products,
         })
       );
-      setProdList([...res.products]);
+      if (Object.keys(filterOption).length) {
+        setProdList(
+          filterOption.isParameters
+            ? [...filterOption.mappedFunction(filterOption.para, res.products)]
+            : [...filterOption.mappedFunction(res.products)]
+        );
+      } else setProdList([...res.products]);
       setIsLoading(false);
     };
     if (!productsList[selectedCategoryState.toLowerCase()]) {
       getProductDetails();
     } else {
-      setProdList([...productsList[selectedCategoryState.toLowerCase()]]);
+      if (Object.keys(filterOption).length) {
+        setProdList(
+          filterOption.isParameters
+            ? [
+                ...filterOption.mappedFunction(filterOption.para, [
+                  ...productsList[selectedCategoryState.toLowerCase()],
+                ]),
+              ]
+            : [
+                ...filterOption.mappedFunction([
+                  ...productsList[selectedCategoryState.toLowerCase()],
+                ]),
+              ]
+        );
+      } else
+        setProdList([...productsList[selectedCategoryState.toLowerCase()]]);
       setIsLoading(false);
     }
-  }, [selectedCategoryState, dispatch, productsList]);
+  }, [selectedCategoryState, dispatch, productsList, filterOption]);
   return (
     <>
       <div className="hidden lg:flex justify-start lg:w-full lg:h-[45px] py-5 font-kanit px-10">
         <div>
-          <div className="flex">
-            {categoryList.map((category, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  dispatch(updateSelectedCategory(category.toLowerCase()));
-                  setSelectedCategoryState(category.toLowerCase());
-                }}
-                className={`font-medium min-w-[100px] max-w-[200px] h-fit text-[18px] px-2 py-2 border border-gray-200 rounded-[30px] flex justify-center items-center m-2 hover:transition hover:duration-200 hover:border hover:border-purple-700 hover:bg-purple-300 cursor-pointer ${
-                  category === selectedCategory && "bg-purple-500 text-white"
-                }`}
-              >
-                {category}
-              </div>
-            ))}
+          <div className="flex justify-between px-4">
+            <div className="flex">
+              {categoryList.map((category, index) => (
+                <div
+                  key={index}
+                  onClick={() => {
+                    dispatch(
+                      updateSelectedCategory({
+                        currCategory: category.toLowerCase(),
+                      })
+                    );
+                    setSelectedCategoryState(category.toLowerCase());
+                  }}
+                  className={`font-medium text-gray-800 min-w-[100px] max-w-[200px] h-fit text-[15px] px-2 py-2 border border-gray-200 rounded-[30px] flex justify-center items-center m-2 hover:transition hover:duration-200 hover:border hover:border-purple-700 hover:bg-purple-300 cursor-pointer ${
+                    category.toLowerCase() === selectedCategory.toLowerCase() &&
+                    "bg-purple-500 text-white"
+                  }`}
+                >
+                  {category}
+                </div>
+              ))}
+            </div>
+            <div className="py-3">
+              <ProductFilter setFilterOption={setFilterOption} />
+            </div>
           </div>
           {isLoading ? (
             <div className="flex justify-center items-center py-2 font-bold">
@@ -80,7 +113,7 @@ const Categories = () => {
           )}
         </div>
       </div>
-
+      {/* MOBILE */}
       <div className="lg:hidden flex justify-center w-full">
         <div>
           <div className="flex justify-center items-center py-4">
@@ -100,7 +133,9 @@ const Categories = () => {
                     <div
                       onClick={() => {
                         dispatch(
-                          updateSelectedCategory(category.toLowerCase())
+                          updateSelectedCategory({
+                            currCategory: category.toLowerCase(),
+                          })
                         );
                         setIsCategoriesOpen(false);
                         setSelectedCategoryState(category.toLowerCase());
